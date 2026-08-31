@@ -14,7 +14,7 @@ item_fit <- itemfit(persons)
 
 easiness <- as.numeric(fit$betapar)
 easiness_se <- as.numeric(fit$se.beta)
-item_names <- names(fit$betapar)
+item_names <- payload$item_names
 item_rows <- lapply(seq_along(easiness), function(index) {
   list(
     item = item_names[[index]],
@@ -64,4 +64,3 @@ result <- list(
 )
 
 cat(toJSON(result, auto_unbox = TRUE, na = "null", digits = 15))
-

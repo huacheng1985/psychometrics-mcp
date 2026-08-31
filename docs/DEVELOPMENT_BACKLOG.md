@@ -7,7 +7,9 @@ diagnostics, provenance, interpretation boundaries, and regression tests.
 ## Priority 0: Foundation and release gates
 
 - Stable JSON schemas, versioned outputs, error taxonomy, and deprecation policy
-- Reference datasets with independently verified numerical targets
+- Versioned eRm implementation-regression target (implemented); independently
+  verified numerical targets from a separate implementation or hand-audited
+  published reference (release gate)
 - Cross-platform Docker builds and MCP client compatibility tests
 - Security review, dependency scanning, data-retention policy, and audit events
 - Reproducible tables, plots, citations, seeds, exclusions, and package versions
@@ -52,4 +54,3 @@ diagnostics, provenance, interpretation boundaries, and regression tests.
 - Free open-source local server as the primary product
 - Quota-limited community endpoint for teaching and public demonstration
 - Optional institutional deployments with private infrastructure and support
-

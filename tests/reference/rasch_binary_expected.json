@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "status": "implementation_regression_target",
+  "independently_verified": false,
+  "engine": "eRm::RM",
+  "estimator": "conditional maximum likelihood",
+  "identification": "sum-zero item easiness parameters",
+  "source_environment": {
+    "R": "4.5.0",
+    "eRm": "1.0.10",
+    "jsonlite": "2.0.0"
+  },
+  "cross_environment_check": {
+    "platform": "Docker Linux arm64",
+    "R": "4.2.2",
+    "eRm": "1.0.2",
+    "jsonlite": "1.8.4",
+    "within_absolute_tolerance": true
+  },
+  "sample_rows": 120,
+  "absolute_tolerance": 0.00001,
+  "conditional_log_likelihood": -98.47507906237703,
+  "basic_parameters": 4,
+  "item_locations": [
+    -1.937170091724474,
+    -1.937168870104458,
+    0.0000002132663572514517,
+    1.937169374737539,
+    1.937169373825036
+  ],
+  "item_easiness_standard_errors": [
+    0.2762148571964522,
+    0.2762226552996212,
+    0.2479099429270534,
+    0.2762185696057307,
+    0.2762184851386481
+  ]
+}

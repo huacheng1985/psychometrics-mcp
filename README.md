@@ -62,8 +62,10 @@ pytest
 python -m build
 ```
 
-The test suite includes a real `eRm` integration test. CI separately validates
-Python behavior, the R adapter, and the Docker build.
+The test suite includes a real `eRm` integration test and a versioned numerical
+regression target for the fixed R adapter. The target is not yet independent
+verification; that remains a release gate. CI separately validates Python
+behavior, the R adapter, and the Docker build.
 
 ## Interpretation and safety boundaries
 
