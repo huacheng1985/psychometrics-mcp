@@ -14,3 +14,12 @@ implementation use the same eRm engine. The Docker result establishes
 cross-environment regression stability, not independent algorithmic validation.
 Independent verification against a separate implementation or a published
 hand-audited reference remains a release gate.
+
+## OLS numerical reference
+
+`ols_numeric_expected.json` records targets produced independently with R 4.5.0
+`stats::lm` for the deterministic model `y ~ x1 + x2` defined in
+`tests/test_analysis.py`. The Python OLS implementation is checked against R for
+coefficient estimates, classical standard errors, model fit, and influence
+diagnostics. This reference validates numerical agreement for the documented
+small model; it is not evidence that regression assumptions hold for new data.

@@ -19,9 +19,12 @@ from .analysis import (
     inspect_response_data as inspect_data,
 )
 from .analysis import (
+    ordinary_least_squares as fit_ols,
+)
+from .analysis import (
     plan_psychometric_analysis as make_plan,
 )
-from .models import AnalysisPlanRequest, CorrelationRequest, NumericData, ResponseData
+from .models import AnalysisPlanRequest, CorrelationRequest, NumericData, OLSRequest, ResponseData
 from .rasch import computation_capabilities, run_rasch_model
 
 mcp = MCPServer(
@@ -61,6 +64,12 @@ def descriptive_statistics(data: NumericData) -> dict[str, Any]:
 def correlation_matrix(request: CorrelationRequest) -> dict[str, Any]:
     """Compute Pearson or Spearman correlations with explicit missing-data handling."""
     return analyze_correlations(request)
+
+
+@mcp.tool(structured_output=True)
+def ordinary_least_squares(request: OLSRequest) -> dict[str, Any]:
+    """Fit a fixed numeric OLS model with classical inference and influence diagnostics."""
+    return fit_ols(request)
 
 
 @mcp.tool(structured_output=True)

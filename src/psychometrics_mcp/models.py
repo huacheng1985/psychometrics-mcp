@@ -67,6 +67,31 @@ class CorrelationRequest(StrictModel):
         return self
 
 
+class OLSRequest(StrictModel):
+    data: NumericData
+    outcome: str = Field(min_length=1)
+    predictors: list[str] = Field(min_length=1)
+    include_intercept: bool = True
+    confidence_level: float = Field(default=0.95, gt=0.5, lt=1.0)
+    missing: Literal["listwise"] = "listwise"
+
+    @model_validator(mode="after")
+    def validate_variables(self) -> OLSRequest:
+        names = self.data.variable_names or [
+            f"variable_{index + 1}" for index in range(len(self.data.values[0]))
+        ]
+        if self.outcome not in names:
+            raise ValueError(f"Unknown outcome variable: {self.outcome!r}.")
+        if len(set(self.predictors)) != len(self.predictors):
+            raise ValueError("predictors must be unique.")
+        unknown = [name for name in self.predictors if name not in names]
+        if unknown:
+            raise ValueError(f"Unknown predictor variables: {unknown}.")
+        if self.outcome in self.predictors:
+            raise ValueError("The outcome must not also be a predictor.")
+        return self
+
+
 class AnalysisPlanRequest(StrictModel):
     purpose: Literal[
         "scale_development",

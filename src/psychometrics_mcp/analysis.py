@@ -7,8 +7,15 @@ from collections import Counter
 from typing import Any
 
 import numpy as np
+from scipy import __version__ as scipy_version
+from scipy.stats import f as f_distribution
+from scipy.stats import t as t_distribution
 
-from .models import AnalysisPlanRequest, CorrelationRequest, NumericData, ResponseData
+from .models import AnalysisPlanRequest, CorrelationRequest, NumericData, OLSRequest, ResponseData
+
+
+class RegressionAnalysisError(ValueError):
+    """Raised when an OLS model cannot be estimated under the fixed contract."""
 
 
 def _matrix(data: ResponseData) -> tuple[np.ndarray, list[str]]:
@@ -174,6 +181,220 @@ def correlation_matrix(request: CorrelationRequest) -> dict[str, Any]:
         "interpretation_boundary": (
             "Correlations describe bivariate association in the analyzed observations; "
             "substantive and measurement conclusions require additional evidence."
+        ),
+    }
+
+
+def ordinary_least_squares(request: OLSRequest) -> dict[str, Any]:
+    matrix, names = _numeric_matrix(request.data)
+    name_to_index = {name: index for index, name in enumerate(names)}
+    selected_names = [request.outcome, *request.predictors]
+    selected = matrix[:, [name_to_index[name] for name in selected_names]]
+    complete = ~np.isnan(selected).any(axis=1)
+    analyzed_rows = np.flatnonzero(complete) + 1
+    excluded_rows = np.flatnonzero(~complete) + 1
+    selected = selected[complete]
+
+    y = selected[:, 0]
+    predictor_matrix = selected[:, 1:]
+    if request.include_intercept:
+        design = np.column_stack([np.ones(selected.shape[0]), predictor_matrix])
+        coefficient_names = ["intercept", *request.predictors]
+    else:
+        design = predictor_matrix
+        coefficient_names = list(request.predictors)
+
+    n, parameter_count = design.shape
+    residual_df = n - parameter_count
+    if residual_df <= 0:
+        raise RegressionAnalysisError(
+            "OLS requires more complete rows than estimated parameters; "
+            f"found n={n} and parameters={parameter_count}."
+        )
+    if np.var(y, ddof=1) == 0:
+        raise RegressionAnalysisError("The outcome has zero variance in complete rows.")
+    rank = int(np.linalg.matrix_rank(design))
+    if rank < parameter_count:
+        raise RegressionAnalysisError(
+            "The design matrix is rank deficient; remove duplicate, constant, or perfectly "
+            "collinear predictors."
+        )
+
+    coefficients, _, _, singular_values = np.linalg.lstsq(design, y, rcond=None)
+    fitted = design @ coefficients
+    residuals = y - fitted
+    sse = float(residuals @ residuals)
+    mse = sse / residual_df
+    xtx_inverse = np.linalg.inv(design.T @ design)
+    covariance = mse * xtx_inverse
+    standard_errors = np.sqrt(np.maximum(0.0, np.diag(covariance)))
+    critical_value = float(
+        t_distribution.ppf((1 + request.confidence_level) / 2, residual_df)
+    )
+
+    coefficient_rows: list[dict[str, Any]] = []
+    for index, name in enumerate(coefficient_names):
+        estimate = float(coefficients[index])
+        standard_error = float(standard_errors[index])
+        if standard_error > 0:
+            statistic = estimate / standard_error
+            p_value = float(2 * t_distribution.sf(abs(statistic), residual_df))
+        else:
+            statistic = None
+            p_value = None
+        coefficient_rows.append(
+            {
+                "term": name,
+                "estimate": estimate,
+                "standard_error": standard_error,
+                "t_statistic": statistic,
+                "degrees_of_freedom": residual_df,
+                "p_value": p_value,
+                "confidence_level": request.confidence_level,
+                "confidence_interval_lower": estimate - critical_value * standard_error,
+                "confidence_interval_upper": estimate + critical_value * standard_error,
+            }
+        )
+
+    if request.include_intercept:
+        baseline_sse = float(np.sum((y - np.mean(y)) ** 2))
+        model_df = parameter_count - 1
+        r_squared_label = "centered"
+    else:
+        baseline_sse = float(y @ y)
+        model_df = parameter_count
+        r_squared_label = "uncentered"
+    r_squared = 1 - sse / baseline_sse
+    if request.include_intercept:
+        adjusted_r_squared = 1 - (1 - r_squared) * (n - 1) / residual_df
+    else:
+        adjusted_r_squared = 1 - (1 - r_squared) * n / residual_df
+    if model_df > 0:
+        if mse > 0:
+            f_statistic = max(0.0, (baseline_sse - sse) / model_df) / mse
+            f_p_value = float(f_distribution.sf(f_statistic, model_df, residual_df))
+        else:
+            f_statistic = None
+            f_p_value = None
+    else:
+        f_statistic = None
+        f_p_value = None
+
+    leverage = np.sum((design @ xtx_inverse) * design, axis=1)
+    if mse > 0:
+        residual_denominator = np.sqrt(np.maximum(mse * (1 - leverage), 0.0))
+        standardized_residuals = np.divide(
+            residuals,
+            residual_denominator,
+            out=np.zeros_like(residuals),
+            where=residual_denominator > 0,
+        )
+        cooks_distance = (
+            (residuals**2 / (parameter_count * mse))
+            * leverage
+            / np.maximum((1 - leverage) ** 2, np.finfo(float).eps)
+        )
+    else:
+        standardized_residuals = np.zeros_like(residuals)
+        cooks_distance = np.zeros_like(residuals)
+
+    leverage_threshold = 2 * parameter_count / n
+    cooks_threshold = 4 / n
+    flagged: list[dict[str, Any]] = []
+    for index, row_number in enumerate(analyzed_rows):
+        reasons: list[str] = []
+        if leverage[index] > leverage_threshold:
+            reasons.append("high_leverage")
+        if abs(standardized_residuals[index]) > 3:
+            reasons.append("large_standardized_residual")
+        if cooks_distance[index] > cooks_threshold:
+            reasons.append("high_cooks_distance")
+        if reasons:
+            flagged.append(
+                {
+                    "input_row": int(row_number),
+                    "leverage": float(leverage[index]),
+                    "standardized_residual": float(standardized_residuals[index]),
+                    "cooks_distance": float(cooks_distance[index]),
+                    "reasons": reasons,
+                }
+            )
+
+    condition_number = float(singular_values[0] / singular_values[-1])
+    warnings: list[str] = []
+    if excluded_rows.size:
+        warnings.append(
+            "Rows missing the outcome or any selected predictor were excluded listwise."
+        )
+    if n < 50:
+        warnings.append("Fewer than 50 complete rows; inference and diagnostics may be unstable.")
+    if condition_number > 30:
+        warnings.append(
+            "The raw design-matrix condition number exceeds 30; inspect scaling and collinearity."
+        )
+    if flagged:
+        warnings.append("One or more observations crossed an influence-screening threshold.")
+    if mse == 0:
+        warnings.append("The model fits perfectly; coefficient significance tests are unavailable.")
+    if len(flagged) > 25:
+        warnings.append("Influence details are limited to the first 25 flagged observations.")
+
+    return {
+        "schema_version": "1.0",
+        "analysis": "ordinary_least_squares",
+        "formula": {
+            "outcome": request.outcome,
+            "predictors": request.predictors,
+            "include_intercept": request.include_intercept,
+        },
+        "sample_flow": {
+            "input_rows": int(matrix.shape[0]),
+            "analyzed_rows": n,
+            "excluded_rows": int(excluded_rows.size),
+            "excluded_input_row_numbers": [int(row) for row in excluded_rows[:100]],
+            "excluded_row_numbers_truncated": bool(excluded_rows.size > 100),
+        },
+        "coefficients": coefficient_rows,
+        "model_fit": {
+            "r_squared": float(r_squared),
+            "r_squared_type": r_squared_label,
+            "adjusted_r_squared": float(adjusted_r_squared),
+            "residual_standard_error": math.sqrt(mse),
+            "rmse": math.sqrt(sse / n),
+            "mean_absolute_error": float(np.mean(np.abs(residuals))),
+            "f_statistic": f_statistic,
+            "f_degrees_of_freedom_numerator": model_df,
+            "f_degrees_of_freedom_denominator": residual_df,
+            "f_p_value": f_p_value,
+        },
+        "diagnostics": {
+            "design_rank": rank,
+            "estimated_parameters": parameter_count,
+            "residual_degrees_of_freedom": residual_df,
+            "condition_number_raw_design": condition_number,
+            "maximum_absolute_standardized_residual": float(
+                np.max(np.abs(standardized_residuals))
+            ),
+            "maximum_leverage": float(np.max(leverage)),
+            "leverage_screening_threshold": leverage_threshold,
+            "maximum_cooks_distance": float(np.max(cooks_distance)),
+            "cooks_distance_screening_threshold": cooks_threshold,
+            "flagged_observation_count": len(flagged),
+            "flagged_observations": flagged[:25],
+        },
+        "method": {
+            "estimator": "Ordinary least squares",
+            "coefficient_covariance": "Classical homoskedastic covariance",
+            "missing": "Listwise deletion across outcome and selected predictors",
+            "inference": "Two-sided Student-t coefficient tests and an F model test",
+            "influence": "Internally standardized residuals, leverage, and Cook's distance",
+        },
+        "package_versions": {"numpy": np.__version__, "scipy": scipy_version},
+        "warnings": warnings,
+        "interpretation_boundary": (
+            "OLS inference assumes an appropriate linear specification, independent errors, "
+            "and homoskedastic residuals. Association is not causation, and regression does "
+            "not establish construct validity, fairness, or measurement invariance."
         ),
     }
 

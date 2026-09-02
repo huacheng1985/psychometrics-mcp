@@ -18,6 +18,7 @@ or fitness for consequential decisions.
 | `ctt_item_analysis` | Item summaries, item-rest correlations, raw alpha, and SEM |
 | `descriptive_statistics` | Available-case numeric summaries, quartiles, and missingness |
 | `correlation_matrix` | Pearson or Spearman matrices with pairwise/listwise deletion and pair-specific n |
+| `ordinary_least_squares` | Numeric OLS with classical inference, fit, sample flow, and influence diagnostics |
 | `plan_psychometric_analysis` | Build a purpose- and design-aware analysis sequence |
 | `rasch_model` | Fit a fixed dichotomous `eRm::RM` model with CML |
 
@@ -81,7 +82,7 @@ behavior, the R adapter, and the Docker build.
   measurement of a construct.
 - Local deployment is preferred for item-response and student-level data.
 
-See [Architecture](docs/ARCHITECTURE.md),
+See [Architecture](docs/ARCHITECTURE.md), [OLS Regression](docs/OLS_REGRESSION.md),
 [Privacy and Deployment](docs/PRIVACY_AND_DEPLOYMENT.md), the [Output
 Contract](docs/OUTPUT_CONTRACT.md), and the [Development
 Backlog](docs/DEVELOPMENT_BACKLOG.md).

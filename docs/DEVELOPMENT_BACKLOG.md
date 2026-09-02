@@ -26,7 +26,9 @@ diagnostics, provenance, interpretation boundaries, and regression tests.
 - Pearson and Spearman matrices with pairwise/listwise deletion (implemented);
   polychoric and partial correlation plus uncertainty intervals (remaining)
 - t tests, ANOVA/ANCOVA, chi-square, effect sizes, and multiplicity controls
-- OLS, logistic, ordinal, count, robust, and multilevel regression
+- Numeric OLS with classical inference and influence screening (implemented);
+  categorical encoding, robust covariance, weighted least squares, logistic,
+  ordinal, count, and multilevel regression (remaining)
 
 ## Priority 2: Measurement core
 

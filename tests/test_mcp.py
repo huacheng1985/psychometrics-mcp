@@ -25,6 +25,7 @@ async def test_stdio_client_discovers_expected_tools() -> None:
         "ctt_item_analysis",
         "descriptive_statistics",
         "correlation_matrix",
+        "ordinary_least_squares",
         "plan_psychometric_analysis",
         "rasch_model",
     }

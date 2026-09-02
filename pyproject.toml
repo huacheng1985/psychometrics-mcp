@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "psychometrics-mcp"
-version = "0.2.0"
+version = "0.3.0"
 description = "A measurement-aware MCP server for reproducible psychometric analysis"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -14,6 +14,7 @@ dependencies = [
   "mcp>=2.1,<3",
   "numpy>=2.0,<3",
   "pydantic>=2.10,<3",
+  "scipy>=1.14,<2",
 ]
 
 [project.optional-dependencies]

@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "status": "independent_numerical_reference",
+  "independently_verified": true,
+  "reference_engine": "R stats::lm",
+  "reference_environment": {
+    "R": "4.5.0"
+  },
+  "model": "y ~ x1 + x2",
+  "sample_rows": 12,
+  "absolute_tolerance": 0.000001,
+  "coefficient_estimates": [
+    5.20142857142857,
+    1.19142857142857,
+    -2.29142857142857
+  ],
+  "coefficient_standard_errors": [
+    0.1337188304749289,
+    0.0173597391748173,
+    0.1198534630609802
+  ],
+  "coefficient_p_values": [
+    2.43760441713507e-11,
+    1.49539534796266e-13,
+    1.35065996793643e-08
+  ],
+  "confidence_interval_lower": [
+    4.89893556126872,
+    1.15215811310995,
+    -2.56255594137814
+  ],
+  "confidence_interval_upper": [
+    5.50392158158843,
+    1.23069902974719,
+    -2.02030120147900
+  ],
+  "r_squared": 0.998127087473048,
+  "adjusted_r_squared": 0.997710884689281,
+  "residual_standard_error": 0.205403203944038,
+  "f_statistic": 2398.17494356659,
+  "maximum_cooks_distance": 0.435507576775649,
+  "maximum_leverage": 0.345238095238095
+}
