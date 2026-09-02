@@ -20,6 +20,7 @@ class RaschModelError(RuntimeError):
 def computation_capabilities() -> dict[str, Any]:
     rscript = shutil.which("Rscript")
     result: dict[str, Any] = {
+        "schema_version": "1.0",
         "python": {"available": True},
         "r": {"available": rscript is not None, "executable": rscript},
         "rasch_rm": {"available": False, "engine": "eRm::RM", "estimator": "CML"},
@@ -109,6 +110,7 @@ def run_rasch_model(data: ResponseData) -> dict[str, Any]:
         "items": int(matrix.shape[1]),
     }
     result["warnings"] = warnings + result.get("warnings", [])
+    result["schema_version"] = "1.0"
     result["interpretation_boundary"] = (
         "Model fit does not by itself establish unidimensionality, invariance, "
         "fairness, or validity."

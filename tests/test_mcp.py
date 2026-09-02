@@ -23,8 +23,11 @@ async def test_stdio_client_discovers_expected_tools() -> None:
         "check_computation_capabilities",
         "inspect_response_data",
         "ctt_item_analysis",
+        "descriptive_statistics",
+        "correlation_matrix",
         "plan_psychometric_analysis",
         "rasch_model",
     }
     assert capabilities.is_error is False
+    assert capabilities.structured_content["schema_version"] == "1.0"
     assert capabilities.structured_content["python"]["available"] is True

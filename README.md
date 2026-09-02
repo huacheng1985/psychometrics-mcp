@@ -16,6 +16,8 @@ or fitness for consequential decisions.
 | `check_computation_capabilities` | Check Python, R, `eRm`, and `jsonlite` availability |
 | `inspect_response_data` | Audit dimensions, missingness, categories, ranges, and variance |
 | `ctt_item_analysis` | Item summaries, item-rest correlations, raw alpha, and SEM |
+| `descriptive_statistics` | Available-case numeric summaries, quartiles, and missingness |
+| `correlation_matrix` | Pearson or Spearman matrices with pairwise/listwise deletion and pair-specific n |
 | `plan_psychometric_analysis` | Build a purpose- and design-aware analysis sequence |
 | `rasch_model` | Fit a fixed dichotomous `eRm::RM` model with CML |
 
@@ -59,10 +61,12 @@ read-only.
 ```bash
 ruff check .
 pytest
+pip-audit
 python -m build
 ```
 
-The test suite includes a real `eRm` integration test and a versioned numerical
+All tool results carry `schema_version: "1.0"`. The test suite includes a real `eRm`
+integration test and a versioned numerical
 regression target for the fixed R adapter. The target is not yet independent
 verification; that remains a release gate. CI separately validates Python
 behavior, the R adapter, and the Docker build.
@@ -78,8 +82,9 @@ behavior, the R adapter, and the Docker build.
 - Local deployment is preferred for item-response and student-level data.
 
 See [Architecture](docs/ARCHITECTURE.md),
-[Privacy and Deployment](docs/PRIVACY_AND_DEPLOYMENT.md), and the
-[Development Backlog](docs/DEVELOPMENT_BACKLOG.md).
+[Privacy and Deployment](docs/PRIVACY_AND_DEPLOYMENT.md), the [Output
+Contract](docs/OUTPUT_CONTRACT.md), and the [Development
+Backlog](docs/DEVELOPMENT_BACKLOG.md).
 
 ## License
 

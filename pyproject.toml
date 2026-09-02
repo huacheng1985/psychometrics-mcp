@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "psychometrics-mcp"
-version = "0.1.0"
+version = "0.2.0"
 description = "A measurement-aware MCP server for reproducible psychometric analysis"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -19,8 +19,9 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "build>=1.2,<2",
-  "pytest>=8.3,<9",
-  "pytest-asyncio>=0.25,<1",
+  "pip-audit>=2.10,<3",
+  "pytest>=9.0.3,<10",
+  "pytest-asyncio>=1.4,<2",
   "ruff>=0.9,<1",
 ]
 
@@ -32,10 +33,6 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 psychometrics_mcp = ["r/*.R"]
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-addopts = "-q"
 
 [tool.ruff]
 line-length = 100

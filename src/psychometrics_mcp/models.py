@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -27,6 +28,42 @@ class ResponseData(StrictModel):
                 raise ValueError("item_names length must match the number of columns.")
             if len(set(self.item_names)) != len(self.item_names):
                 raise ValueError("item_names must be unique.")
+        return self
+
+
+class NumericData(StrictModel):
+    values: list[list[float | int | None]] = Field(min_length=2)
+    variable_names: list[str] | None = None
+
+    @model_validator(mode="after")
+    def rectangular_and_finite(self) -> NumericData:
+        width = len(self.values[0])
+        if width < 1:
+            raise ValueError("At least one variable is required.")
+        if any(len(row) != width for row in self.values):
+            raise ValueError("Data rows must all have the same number of variables.")
+        observed = (value for row in self.values for value in row if value is not None)
+        if any(not math.isfinite(float(value)) for value in observed):
+            raise ValueError("Observed values must be finite numbers.")
+        if self.variable_names is not None:
+            if len(self.variable_names) != width:
+                raise ValueError("variable_names length must match the number of columns.")
+            if len(set(self.variable_names)) != len(self.variable_names):
+                raise ValueError("variable_names must be unique.")
+            if any(not name.strip() for name in self.variable_names):
+                raise ValueError("variable_names must not be blank.")
+        return self
+
+
+class CorrelationRequest(StrictModel):
+    data: NumericData
+    method: Literal["pearson", "spearman"] = "pearson"
+    missing: Literal["pairwise", "listwise"] = "pairwise"
+
+    @model_validator(mode="after")
+    def at_least_two_variables(self) -> CorrelationRequest:
+        if len(self.data.values[0]) < 2:
+            raise ValueError("Correlation analysis requires at least two variables.")
         return self
 
 

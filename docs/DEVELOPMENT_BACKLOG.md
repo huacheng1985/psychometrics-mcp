@@ -6,19 +6,25 @@ diagnostics, provenance, interpretation boundaries, and regression tests.
 
 ## Priority 0: Foundation and release gates
 
-- Stable JSON schemas, versioned outputs, error taxonomy, and deprecation policy
+- Schema version on every current output and documented compatibility policy
+  (implemented); typed output models, machine-readable error taxonomy, and
+  deprecation telemetry (remaining)
 - Versioned eRm implementation-regression target (implemented); independently
   verified numerical targets from a separate implementation or hand-audited
   published reference (release gate)
 - Cross-platform Docker builds and MCP client compatibility tests
-- Security review, dependency scanning, data-retention policy, and audit events
+- CI dependency scanning with pip-audit and local no-persistence policy
+  (implemented); repository vulnerability alerts, formal security review,
+  retention enforcement for future hosted modes, and audit events (remaining)
 - Reproducible tables, plots, citations, seeds, exclusions, and package versions
 
 ## Priority 1: Everyday analytical foundation
 
 - Data import, dictionaries, recoding, reverse scoring, weights, and missingness
-- Descriptive statistics, distributions, cross-tabs, and visual diagnostics
-- Pearson, Spearman, polychoric, partial correlation, and uncertainty intervals
+- Descriptive statistics with missingness and quartiles (implemented);
+  distributions, cross-tabs, and visual diagnostics (remaining)
+- Pearson and Spearman matrices with pairwise/listwise deletion (implemented);
+  polychoric and partial correlation plus uncertainty intervals (remaining)
 - t tests, ANOVA/ANCOVA, chi-square, effect sizes, and multiplicity controls
 - OLS, logistic, ordinal, count, robust, and multilevel regression
 

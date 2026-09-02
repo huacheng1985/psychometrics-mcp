@@ -41,6 +41,7 @@ def test_real_erm_rasch_model() -> None:
     if not computation_capabilities()["rasch_rm"]["available"]:
         pytest.skip("R/eRm/jsonlite not installed")
     result = run_rasch_model(reference_data())
+    assert result["schema_version"] == "1.0"
     assert result["model"]["engine"] == "eRm::RM"
     assert result["model"]["estimator"] == "conditional maximum likelihood"
     assert result["sample_flow"]["analyzed_rows"] == 120

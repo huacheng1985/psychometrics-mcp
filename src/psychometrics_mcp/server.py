@@ -7,7 +7,13 @@ from typing import Any
 from mcp.server.mcpserver import MCPServer
 
 from .analysis import (
+    correlation_matrix as analyze_correlations,
+)
+from .analysis import (
     ctt_item_analysis as analyze_ctt,
+)
+from .analysis import (
+    descriptive_statistics as describe_data,
 )
 from .analysis import (
     inspect_response_data as inspect_data,
@@ -15,7 +21,7 @@ from .analysis import (
 from .analysis import (
     plan_psychometric_analysis as make_plan,
 )
-from .models import AnalysisPlanRequest, ResponseData
+from .models import AnalysisPlanRequest, CorrelationRequest, NumericData, ResponseData
 from .rasch import computation_capabilities, run_rasch_model
 
 mcp = MCPServer(
@@ -43,6 +49,18 @@ def inspect_response_data(data: ResponseData) -> dict[str, Any]:
 def ctt_item_analysis(data: ResponseData) -> dict[str, Any]:
     """Compute item summaries, item-rest correlations, raw alpha, and SEM with warnings."""
     return analyze_ctt(data)
+
+
+@mcp.tool(structured_output=True)
+def descriptive_statistics(data: NumericData) -> dict[str, Any]:
+    """Summarize numeric variables with sample flow, missingness, and robust boundaries."""
+    return describe_data(data)
+
+
+@mcp.tool(structured_output=True)
+def correlation_matrix(request: CorrelationRequest) -> dict[str, Any]:
+    """Compute Pearson or Spearman correlations with explicit missing-data handling."""
+    return analyze_correlations(request)
 
 
 @mcp.tool(structured_output=True)

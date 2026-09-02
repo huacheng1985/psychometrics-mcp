@@ -8,7 +8,7 @@ from typing import Any
 
 import numpy as np
 
-from .models import AnalysisPlanRequest, ResponseData
+from .models import AnalysisPlanRequest, CorrelationRequest, NumericData, ResponseData
 
 
 def _matrix(data: ResponseData) -> tuple[np.ndarray, list[str]]:
@@ -18,6 +18,164 @@ def _matrix(data: ResponseData) -> tuple[np.ndarray, list[str]]:
     )
     names = data.item_names or [f"item_{index + 1}" for index in range(matrix.shape[1])]
     return matrix, names
+
+
+def _numeric_matrix(data: NumericData) -> tuple[np.ndarray, list[str]]:
+    matrix = np.array(
+        [[np.nan if value is None else float(value) for value in row] for row in data.values],
+        dtype=float,
+    )
+    names = data.variable_names or [
+        f"variable_{index + 1}" for index in range(matrix.shape[1])
+    ]
+    return matrix, names
+
+
+def descriptive_statistics(data: NumericData) -> dict[str, Any]:
+    matrix, names = _numeric_matrix(data)
+    variables: list[dict[str, Any]] = []
+    for index, name in enumerate(names):
+        column = matrix[:, index]
+        observed = column[~np.isnan(column)]
+        variables.append(
+            {
+                "variable": name,
+                "observed_n": int(observed.size),
+                "missing_n": int(np.isnan(column).sum()),
+                "missing_rate": float(np.isnan(column).mean()),
+                "mean": None if not observed.size else float(np.mean(observed)),
+                "standard_deviation": (
+                    None if observed.size < 2 else float(np.std(observed, ddof=1))
+                ),
+                "minimum": None if not observed.size else float(np.min(observed)),
+                "first_quartile": (
+                    None if not observed.size else float(np.percentile(observed, 25))
+                ),
+                "median": None if not observed.size else float(np.median(observed)),
+                "third_quartile": (
+                    None if not observed.size else float(np.percentile(observed, 75))
+                ),
+                "maximum": None if not observed.size else float(np.max(observed)),
+                "zero_variance": bool(observed.size > 0 and np.all(observed == observed[0])),
+            }
+        )
+    complete = ~np.isnan(matrix).any(axis=1)
+    warnings: list[str] = []
+    if np.isnan(matrix).any():
+        warnings.append("Statistics use all observed values separately for each variable.")
+    if any(variable["observed_n"] < 2 for variable in variables):
+        warnings.append(
+            "Standard deviation is unavailable for variables with fewer than two values."
+        )
+    if any(variable["zero_variance"] for variable in variables):
+        warnings.append("One or more variables have zero observed variance.")
+    return {
+        "schema_version": "1.0",
+        "sample_flow": {
+            "input_rows": int(matrix.shape[0]),
+            "variables": int(matrix.shape[1]),
+            "complete_rows": int(complete.sum()),
+            "incomplete_rows": int((~complete).sum()),
+        },
+        "variables": variables,
+        "method": {
+            "standard_deviation": "Sample standard deviation with denominator n - 1",
+            "quartiles": "Linear interpolation (NumPy default)",
+            "missing": "Available-case statistics computed separately by variable",
+        },
+        "warnings": warnings,
+        "interpretation_boundary": (
+            "Descriptive statistics summarize this sample; they do not establish population "
+            "effects, measurement quality, fairness, or validity."
+        ),
+    }
+
+
+def _average_ranks(values: np.ndarray) -> np.ndarray:
+    order = np.argsort(values, kind="mergesort")
+    sorted_values = values[order]
+    ranks = np.empty(values.size, dtype=float)
+    start = 0
+    while start < values.size:
+        stop = start + 1
+        while stop < values.size and sorted_values[stop] == sorted_values[start]:
+            stop += 1
+        ranks[order[start:stop]] = (start + 1 + stop) / 2
+        start = stop
+    return ranks
+
+
+def correlation_matrix(request: CorrelationRequest) -> dict[str, Any]:
+    matrix, names = _numeric_matrix(request.data)
+    input_rows = int(matrix.shape[0])
+    if request.missing == "listwise":
+        matrix = matrix[~np.isnan(matrix).any(axis=1)]
+
+    estimates: list[list[float | None]] = []
+    pairwise_n: list[list[int]] = []
+    unavailable_pairs: list[str] = []
+    for x_index, x_name in enumerate(names):
+        estimate_row: list[float | None] = []
+        n_row: list[int] = []
+        for y_index, y_name in enumerate(names):
+            x = matrix[:, x_index]
+            y = matrix[:, y_index]
+            keep = ~np.isnan(x) & ~np.isnan(y)
+            x_keep, y_keep = x[keep], y[keep]
+            n = int(keep.sum())
+            estimate: float | None = None
+            if n >= 3 and np.std(x_keep, ddof=1) > 0 and np.std(y_keep, ddof=1) > 0:
+                if request.method == "spearman":
+                    x_keep = _average_ranks(x_keep)
+                    y_keep = _average_ranks(y_keep)
+                estimate = float(np.corrcoef(x_keep, y_keep)[0, 1])
+                if abs(estimate) < 1e-15:
+                    estimate = 0.0
+                estimate = max(-1.0, min(1.0, estimate))
+            elif y_index >= x_index:
+                unavailable_pairs.append(f"{x_name} × {y_name}")
+            estimate_row.append(estimate)
+            n_row.append(n)
+        estimates.append(estimate_row)
+        pairwise_n.append(n_row)
+
+    warnings: list[str] = []
+    if np.isnan(_numeric_matrix(request.data)[0]).any():
+        if request.missing == "pairwise":
+            warnings.append(
+                "Pairwise deletion can use different rows for different correlations and may "
+                "produce a non-positive-semidefinite matrix."
+            )
+        else:
+            warnings.append("Listwise deletion excludes every row with any missing value.")
+    if unavailable_pairs:
+        warnings.append(
+            "Correlations unavailable because n < 3 or a variable has zero variance: "
+            + ", ".join(unavailable_pairs)
+            + "."
+        )
+    warnings.append(
+        "Correlation does not establish causation, construct validity, or measurement invariance."
+    )
+    return {
+        "schema_version": "1.0",
+        "method": request.method,
+        "missing": request.missing,
+        "variables": names,
+        "correlations": estimates,
+        "pairwise_n": pairwise_n,
+        "sample_flow": {
+            "input_rows": input_rows,
+            "listwise_analyzed_rows": (
+                int(matrix.shape[0]) if request.missing == "listwise" else None
+            ),
+        },
+        "warnings": warnings,
+        "interpretation_boundary": (
+            "Correlations describe bivariate association in the analyzed observations; "
+            "substantive and measurement conclusions require additional evidence."
+        ),
+    }
 
 
 def inspect_response_data(data: ResponseData) -> dict[str, Any]:
@@ -43,6 +201,7 @@ def inspect_response_data(data: ResponseData) -> dict[str, Any]:
         )
     complete = ~np.isnan(matrix).any(axis=1)
     return {
+        "schema_version": "1.0",
         "sample": {
             "rows": int(matrix.shape[0]),
             "items": int(matrix.shape[1]),
@@ -119,6 +278,7 @@ def ctt_item_analysis(data: ResponseData) -> dict[str, Any]:
         "Reliability is sample- and use-dependent; alpha alone is not validity evidence."
     )
     return {
+        "schema_version": "1.0",
         "sample_flow": {
             "input_rows": int(matrix.shape[0]),
             "complete_rows_for_scale_statistics": int(complete.shape[0]),
@@ -186,6 +346,7 @@ def plan_psychometric_analysis(request: AnalysisPlanRequest) -> dict[str, Any]:
         "diagnostics, and sensitivity analyses."
     )
     return {
+        "schema_version": "1.0",
         "recommended_sequence": steps,
         "interpretation_boundary": (
             "This plan supports analysis design; it does not establish validity "
