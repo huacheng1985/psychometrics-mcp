@@ -5,7 +5,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends r-base r-cran-erm r-cran-jsonlite \
+    && apt-get install -y --no-install-recommends \
+      r-base r-cran-erm r-cran-jsonlite r-cran-lavaan \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -17,4 +18,3 @@ RUN useradd --create-home --uid 10001 mcp
 USER mcp
 
 ENTRYPOINT ["psychometrics-mcp"]
-

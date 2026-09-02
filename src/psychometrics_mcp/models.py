@@ -92,6 +92,49 @@ class OLSRequest(StrictModel):
         return self
 
 
+class FactorDefinition(StrictModel):
+    name: str = Field(min_length=1)
+    indicators: list[str] = Field(min_length=3)
+
+    @model_validator(mode="after")
+    def unique_indicators(self) -> FactorDefinition:
+        if not self.name.strip():
+            raise ValueError("Factor names must not be blank.")
+        if len(set(self.indicators)) != len(self.indicators):
+            raise ValueError(f"Indicators for factor {self.name!r} must be unique.")
+        return self
+
+
+class CFARequest(StrictModel):
+    data: NumericData
+    factors: list[FactorDefinition] = Field(min_length=1)
+    estimator: Literal["ML", "MLR"] = "MLR"
+    confidence_level: float = Field(default=0.95, gt=0.5, lt=1.0)
+    missing: Literal["listwise"] = "listwise"
+
+    @model_validator(mode="after")
+    def validate_measurement_model(self) -> CFARequest:
+        names = self.data.variable_names or [
+            f"variable_{index + 1}" for index in range(len(self.data.values[0]))
+        ]
+        factor_names = [factor.name for factor in self.factors]
+        if len(set(factor_names)) != len(factor_names):
+            raise ValueError("Factor names must be unique.")
+        indicators = [indicator for factor in self.factors for indicator in factor.indicators]
+        unknown = [indicator for indicator in indicators if indicator not in names]
+        if unknown:
+            raise ValueError(f"Unknown indicator variables: {sorted(set(unknown))}.")
+        duplicates = sorted(
+            {indicator for indicator in indicators if indicators.count(indicator) > 1}
+        )
+        if duplicates:
+            raise ValueError(
+                "This fixed simple-structure CFA does not permit cross-loadings; "
+                f"repeated indicators: {duplicates}."
+            )
+        return self
+
+
 class AnalysisPlanRequest(StrictModel):
     purpose: Literal[
         "scale_development",

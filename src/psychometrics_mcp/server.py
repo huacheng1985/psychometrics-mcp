@@ -24,7 +24,16 @@ from .analysis import (
 from .analysis import (
     plan_psychometric_analysis as make_plan,
 )
-from .models import AnalysisPlanRequest, CorrelationRequest, NumericData, OLSRequest, ResponseData
+from .factor import confirmatory_factor_analysis as fit_cfa
+from .factor import factor_capabilities
+from .models import (
+    AnalysisPlanRequest,
+    CFARequest,
+    CorrelationRequest,
+    NumericData,
+    OLSRequest,
+    ResponseData,
+)
 from .rasch import computation_capabilities, run_rasch_model
 
 mcp = MCPServer(
@@ -38,8 +47,10 @@ mcp = MCPServer(
 
 @mcp.tool(structured_output=True)
 def check_computation_capabilities() -> dict[str, Any]:
-    """Report whether local Python and the fixed R/eRm Rasch engine are available."""
-    return computation_capabilities()
+    """Report whether local Python and the fixed R analysis engines are available."""
+    result = computation_capabilities()
+    result["confirmatory_factor_analysis"] = factor_capabilities()
+    return result
 
 
 @mcp.tool(structured_output=True)
@@ -70,6 +81,12 @@ def correlation_matrix(request: CorrelationRequest) -> dict[str, Any]:
 def ordinary_least_squares(request: OLSRequest) -> dict[str, Any]:
     """Fit a fixed numeric OLS model with classical inference and influence diagnostics."""
     return fit_ols(request)
+
+
+@mcp.tool(structured_output=True)
+def confirmatory_factor_analysis(request: CFARequest) -> dict[str, Any]:
+    """Fit a fixed continuous-indicator simple-structure CFA with lavaan::cfa."""
+    return fit_cfa(request)
 
 
 @mcp.tool(structured_output=True)

@@ -23,3 +23,12 @@ hand-audited reference remains a release gate.
 coefficient estimates, classical standard errors, model fit, and influence
 diagnostics. This reference validates numerical agreement for the documented
 small model; it is not evidence that regression assumptions hold for new data.
+
+## CFA numerical reference
+
+`cfa_holzinger_expected.json` records the published three-factor
+`lavaan::HolzingerSwineford1939` example and additional high-precision targets
+for the same model under `std.lv = TRUE`. The integration test verifies model
+mapping, extraction, and numerical stability through the fixed adapter. Because
+the reference and runtime both use lavaan, this remains engine-based numerical
+validation rather than an independent CFA implementation.

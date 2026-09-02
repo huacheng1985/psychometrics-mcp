@@ -16,7 +16,9 @@ diagnostics, provenance, interpretation boundaries, and regression tests.
 - CI dependency scanning with pip-audit and local no-persistence policy
   (implemented); repository vulnerability alerts, formal security review,
   retention enforcement for future hosted modes, and audit events (remaining)
-- Reproducible tables, plots, citations, seeds, exclusions, and package versions
+- Evidence-gated tool admission policy with method and package citations
+  (implemented); reproducible tables, plots, machine-readable citations, seeds,
+  exclusions, and package versions (remaining)
 
 ## Priority 1: Everyday analytical foundation
 
@@ -33,7 +35,9 @@ diagnostics, provenance, interpretation boundaries, and regression tests.
 ## Priority 2: Measurement core
 
 - CTT scale diagnostics, reliability intervals, omega, and score precision
-- EFA, parallel analysis, CFA, SEM, categorical estimators, and local dependence
+- Continuous-indicator simple-structure CFA with lavaan ML/MLR (implemented);
+  EFA, parallel analysis, SEM, categorical estimators, and local dependence
+  (remaining)
 - Rasch extensions: PCM, RSM, person/item fit, Wright maps, targeting, and DIF
 - 1PL/2PL/3PL and polytomous IRT with model comparison and information functions
 - Generalizability theory, rater models, many-facet models, and DCM

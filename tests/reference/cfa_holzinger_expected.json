@@ -1,0 +1,29 @@
+{
+  "status": "published_lavaan_example_regression_target",
+  "source": "https://lavaan.ugent.be/tutorial/cfa.html",
+  "dataset": "lavaan::HolzingerSwineford1939, x1 through x9",
+  "model": "visual =~ x1 + x2 + x3; textual =~ x4 + x5 + x6; speed =~ x7 + x8 + x9",
+  "estimator": "ML",
+  "identification": "std.lv = TRUE",
+  "sample_rows": 301,
+  "absolute_tolerance": 0.000001,
+  "fit": {
+    "chi_square": 85.30552177250442,
+    "degrees_of_freedom": 24,
+    "cfi": 0.9305596517964684,
+    "tli": 0.8958394776947025,
+    "rmsea": 0.0921214845120708,
+    "srmr": 0.06520509755238989
+  },
+  "unstandardized_loadings_std_lv": [
+    0.8996203138674875,
+    0.49794051110941,
+    0.656156092628451,
+    0.9896934490943929,
+    1.101604650031453,
+    0.9166009777593723,
+    0.6194754335579264,
+    0.7309488029150755,
+    0.6699801087812588
+  ]
+}

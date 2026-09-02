@@ -22,7 +22,7 @@ jobs:
       - run: pip-audit
       - run: python -m build
 
-  rasch-integration:
+  r-integration:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -36,6 +36,7 @@ jobs:
           packages: |
             any::eRm
             any::jsonlite
+            any::lavaan
       - run: python -m pip install '.[dev]'
       - run: pytest -m integration
 

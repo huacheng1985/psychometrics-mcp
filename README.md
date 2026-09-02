@@ -13,12 +13,13 @@ or fitness for consequential decisions.
 
 | Tool | Purpose |
 |---|---|
-| `check_computation_capabilities` | Check Python, R, `eRm`, and `jsonlite` availability |
+| `check_computation_capabilities` | Check Python and fixed R engine availability |
 | `inspect_response_data` | Audit dimensions, missingness, categories, ranges, and variance |
 | `ctt_item_analysis` | Item summaries, item-rest correlations, raw alpha, and SEM |
 | `descriptive_statistics` | Available-case numeric summaries, quartiles, and missingness |
 | `correlation_matrix` | Pearson or Spearman matrices with pairwise/listwise deletion and pair-specific n |
 | `ordinary_least_squares` | Numeric OLS with classical inference, fit, sample flow, and influence diagnostics |
+| `confirmatory_factor_analysis` | Continuous-indicator simple-structure CFA with fixed `lavaan::cfa` ML/MLR estimation |
 | `plan_psychometric_analysis` | Build a purpose- and design-aware analysis sequence |
 | `rasch_model` | Fit a fixed dichotomous `eRm::RM` model with CML |
 
@@ -33,7 +34,7 @@ models, DCM, validity evidence, and reproducible reporting.
 Requirements:
 
 - Python 3.11+
-- R with `eRm` and `jsonlite` for `rasch_model`
+- R with `eRm`, `lavaan`, and `jsonlite` for the fixed Rasch and CFA adapters
 
 ```bash
 python3 -m venv .venv
@@ -66,23 +67,24 @@ pip-audit
 python -m build
 ```
 
-All tool results carry `schema_version: "1.0"`. The test suite includes a real `eRm`
-integration test and a versioned numerical
-regression target for the fixed R adapter. The target is not yet independent
-verification; that remains a release gate. CI separately validates Python
-behavior, the R adapter, and the Docker build.
+All tool results carry `schema_version: "1.0"`. The test suite includes real
+`eRm` and `lavaan` integration tests and versioned numerical regression targets.
+Each reference states whether it is independent or engine-based validation. CI
+separately validates Python behavior, the R adapters, and the Docker build.
 
 ## Interpretation and safety boundaries
 
 - Tool inputs are strict schemas; unknown fields are rejected.
-- `rasch_model` calls one fixed R script and never accepts user R or shell code.
+- R-backed tools call fixed scripts and never accept user R or shell code.
 - Missingness, exclusions, methods, versions, warnings, and sample flow are
   returned with analytical results.
 - Reliability is not validity, model fit is not fairness, and prediction is not
   measurement of a construct.
 - Local deployment is preferred for item-response and student-level data.
 
-See [Architecture](docs/ARCHITECTURE.md), [OLS Regression](docs/OLS_REGRESSION.md),
+See [Architecture](docs/ARCHITECTURE.md), [Tool Admission
+Policy](docs/TOOL_ADMISSION_POLICY.md), [OLS Regression](docs/OLS_REGRESSION.md),
+[Confirmatory Factor Analysis](docs/CFA.md),
 [Privacy and Deployment](docs/PRIVACY_AND_DEPLOYMENT.md), the [Output
 Contract](docs/OUTPUT_CONTRACT.md), and the [Development
 Backlog](docs/DEVELOPMENT_BACKLOG.md).
