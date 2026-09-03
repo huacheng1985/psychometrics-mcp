@@ -41,3 +41,13 @@ generator in `tests/test_exploratory.py`. It catches changes in the fixed
 parallel-analysis adapter, R random-number stream, or `psych` engine. Because
 the reference and runtime both use `psych`, it is engine-based regression
 validation rather than an independent confirmation of Horn's method.
+
+## Ordinal numerical references
+
+`ordinal_expected.json` contains three targets. The symmetric binary-table
+polychoric target is independent and analytic: when both thresholds equal zero,
+the quadrant probability identity gives the stated tetrachoric correlation.
+The ordinal EFA and categorical CFA targets use the deterministic 500-row,
+six-indicator generator in `tests/test_ordinal.py`. They detect adapter and
+engine drift but remain engine-based because the targets and runtime use
+`psych` or `lavaan`, respectively.

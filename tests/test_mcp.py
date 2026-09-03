@@ -25,10 +25,13 @@ async def test_stdio_client_discovers_expected_tools() -> None:
         "ctt_item_analysis",
         "descriptive_statistics",
         "correlation_matrix",
+        "polychoric_correlation_matrix",
         "ordinary_least_squares",
         "confirmatory_factor_analysis",
+        "categorical_confirmatory_factor_analysis",
         "parallel_analysis",
         "exploratory_factor_analysis",
+        "ordinal_exploratory_factor_analysis",
         "plan_psychometric_analysis",
         "rasch_model",
     }

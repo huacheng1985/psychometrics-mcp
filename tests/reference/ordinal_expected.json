@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "polychoric": {
+    "status": "independent_analytic_symmetric_binary_reference",
+    "table_counts": {
+      "00": 350,
+      "01": 150,
+      "10": 150,
+      "11": 350
+    },
+    "derivation": "With both thresholds equal to zero, P(Y1>0,Y2>0)=1/4+asin(rho)/(2*pi), so rho=sin(2*pi*(0.35-0.25)).",
+    "analytic_tetrachoric_correlation": 0.5877852522924731,
+    "absolute_tolerance": 0.00002
+  },
+  "ordinal_efa": {
+    "status": "engine_based_psych_regression_target",
+    "generator": "Deterministic two-factor ordinal generator in tests/test_ordinal.py",
+    "engine_version_recorded": "psych 2.5.6 with R 4.5.0",
+    "pattern_loadings": [
+      [0.9624393574155994, 0.002654958610579353],
+      [0.9538179717035439, -0.01257343954362922],
+      [0.9063613412575711, 0.01161084485377285],
+      [-0.004226839035226648, 0.9681623626777589],
+      [0.003701052866132342, 0.9335946778280204],
+      [0.001221177886495414, 0.9135441461319819]
+    ],
+    "absolute_tolerance": 0.00001,
+    "validation_scope": "The target detects adapter and environment drift; it is not independent validation because psych generated the recorded values and runtime values."
+  },
+  "categorical_cfa": {
+    "status": "engine_based_lavaan_regression_target",
+    "generator": "Deterministic two-factor ordinal generator in tests/test_ordinal.py",
+    "engine_version_recorded": "lavaan 0.6-19 with R 4.5.0",
+    "robust_scaled_chi_square": 2.706015638666587,
+    "srmr": 0.005638086302390985,
+    "standardized_loadings": [
+      0.9655872710596098,
+      0.9549085028755556,
+      0.9173566414212609,
+      0.9692067520225127,
+      0.939088296778922,
+      0.9204935113925771
+    ],
+    "standardized_factor_correlation": 0.3543984630849603,
+    "absolute_tolerance": 0.00001,
+    "validation_scope": "The target detects adapter and environment drift; it is not independent validation because lavaan generated the recorded values and runtime values."
+  }
+}

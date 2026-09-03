@@ -18,10 +18,13 @@ or fitness for consequential decisions.
 | `ctt_item_analysis` | Item summaries, item-rest correlations, raw alpha, and SEM |
 | `descriptive_statistics` | Available-case numeric summaries, quartiles, and missingness |
 | `correlation_matrix` | Pearson or Spearman matrices with pairwise/listwise deletion and pair-specific n |
+| `polychoric_correlation_matrix` | Unsmoothed two-step polychoric matrix for ordered categorical variables |
 | `ordinary_least_squares` | Numeric OLS with classical inference, fit, sample flow, and influence diagnostics |
 | `confirmatory_factor_analysis` | Continuous-indicator simple-structure CFA with fixed `lavaan::cfa` ML/MLR estimation |
+| `categorical_confirmatory_factor_analysis` | Ordered-indicator simple-structure CFA with fixed `lavaan::cfa` WLSMV estimation |
 | `parallel_analysis` | Seeded Horn-style common-factor retention evidence with MINRES or ML |
 | `exploratory_factor_analysis` | Fixed-factor continuous EFA with MINRES/ML and oblimin/varimax/no rotation |
+| `ordinal_exploratory_factor_analysis` | Fixed-factor EFA from an unsmoothed polychoric matrix |
 | `plan_psychometric_analysis` | Build a purpose- and design-aware analysis sequence |
 | `rasch_model` | Fit a fixed dichotomous `eRm::RM` model with CML |
 
@@ -90,6 +93,7 @@ See [Architecture](docs/ARCHITECTURE.md), [Tool Admission
 Policy](docs/TOOL_ADMISSION_POLICY.md), [OLS Regression](docs/OLS_REGRESSION.md),
 [Confirmatory Factor Analysis](docs/CFA.md),
 [EFA and Parallel Analysis](docs/EFA_AND_PARALLEL_ANALYSIS.md),
+[Ordinal Correlation and Factor Models](docs/ORDINAL_CORRELATION_AND_FACTOR_MODELS.md),
 [Privacy and Deployment](docs/PRIVACY_AND_DEPLOYMENT.md), the [Output
 Contract](docs/OUTPUT_CONTRACT.md), and the [Development
 Backlog](docs/DEVELOPMENT_BACKLOG.md).

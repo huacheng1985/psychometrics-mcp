@@ -55,6 +55,27 @@ class NumericData(StrictModel):
         return self
 
 
+class OrdinalData(StrictModel):
+    values: list[list[int | None]] = Field(min_length=2)
+    variable_names: list[str] | None = None
+
+    @model_validator(mode="after")
+    def rectangular(self) -> OrdinalData:
+        width = len(self.values[0])
+        if width < 1:
+            raise ValueError("At least one variable is required.")
+        if any(len(row) != width for row in self.values):
+            raise ValueError("Data rows must all have the same number of variables.")
+        if self.variable_names is not None:
+            if len(self.variable_names) != width:
+                raise ValueError("variable_names length must match the number of columns.")
+            if len(set(self.variable_names)) != len(self.variable_names):
+                raise ValueError("variable_names must be unique.")
+            if any(not name.strip() for name in self.variable_names):
+                raise ValueError("variable_names must not be blank.")
+        return self
+
+
 class CorrelationRequest(StrictModel):
     data: NumericData
     method: Literal["pearson", "spearman"] = "pearson"
@@ -132,6 +153,68 @@ class CFARequest(StrictModel):
                 "This fixed simple-structure CFA does not permit cross-loadings; "
                 f"repeated indicators: {duplicates}."
             )
+        return self
+
+
+class PolychoricCorrelationRequest(StrictModel):
+    data: OrdinalData
+    continuity_correction: float = Field(default=0.5, ge=0.0, le=1.0)
+    missing: Literal["listwise"] = "listwise"
+
+    @model_validator(mode="after")
+    def at_least_two_variables(self) -> PolychoricCorrelationRequest:
+        if len(self.data.values[0]) < 2:
+            raise ValueError("Polychoric correlation requires at least two variables.")
+        return self
+
+
+class CategoricalCFARequest(StrictModel):
+    data: OrdinalData
+    factors: list[FactorDefinition] = Field(min_length=1)
+    estimator: Literal["WLSMV"] = "WLSMV"
+    confidence_level: float = Field(default=0.95, gt=0.5, lt=1.0)
+    missing: Literal["listwise"] = "listwise"
+
+    @model_validator(mode="after")
+    def validate_measurement_model(self) -> CategoricalCFARequest:
+        names = self.data.variable_names or [
+            f"variable_{index + 1}" for index in range(len(self.data.values[0]))
+        ]
+        factor_names = [factor.name for factor in self.factors]
+        if len(set(factor_names)) != len(factor_names):
+            raise ValueError("Factor names must be unique.")
+        indicators = [indicator for factor in self.factors for indicator in factor.indicators]
+        unknown = [indicator for indicator in indicators if indicator not in names]
+        if unknown:
+            raise ValueError(f"Unknown indicator variables: {sorted(set(unknown))}.")
+        duplicates = sorted(
+            {indicator for indicator in indicators if indicators.count(indicator) > 1}
+        )
+        if duplicates:
+            raise ValueError(
+                "This fixed categorical CFA does not permit cross-loadings; "
+                f"repeated indicators: {duplicates}."
+            )
+        return self
+
+
+class OrdinalEFARequest(StrictModel):
+    data: OrdinalData
+    factors: int = Field(ge=1)
+    extraction: Literal["minres", "ml"] = "minres"
+    rotation: Literal["oblimin", "varimax", "none"] = "oblimin"
+    continuity_correction: float = Field(default=0.5, ge=0.0, le=1.0)
+    missing: Literal["listwise"] = "listwise"
+
+    @model_validator(mode="after")
+    def validate_dimensions(self) -> OrdinalEFARequest:
+        variables = len(self.data.values[0])
+        if variables < 3:
+            raise ValueError(
+                "Ordinal exploratory factor analysis requires at least three variables."
+            )
+        if self.factors >= variables:
+            raise ValueError("factors must be smaller than the number of variables.")
         return self
 
 

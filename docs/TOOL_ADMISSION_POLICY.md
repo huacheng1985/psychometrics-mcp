@@ -36,8 +36,12 @@ Horn-style common-factor parallel analysis through fixed `psych::fa` adapters.
 Their candidate-versus-fitted outputs remain separate, and neither may name or
 confirm a construct automatically.
 
+The next accepted dependency slice comprises unsmoothed two-step polychoric
+correlations, ordinal EFA through `psych`, and categorical CFA through lavaan
+WLSMV. Association, exploration, and confirmation remain separate outputs.
+
 The following areas remain candidates, not accepted implementations:
-categorical EFA/CFA and invariance; broader IRT and polytomous Rasch; DIF;
+categorical parallel analysis and invariance; broader IRT and polytomous Rasch; DIF;
 linking and equating; CAT/MST; G-theory and rater models; DCM; measurement-aware
 machine learning; validity-evidence mapping; and reproducible report generation.
 Each will receive its own evidence review before coding.

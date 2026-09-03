@@ -26,7 +26,9 @@ diagnostics, provenance, interpretation boundaries, and regression tests.
 - Descriptive statistics with missingness and quartiles (implemented);
   distributions, cross-tabs, and visual diagnostics (remaining)
 - Pearson and Spearman matrices with pairwise/listwise deletion (implemented);
-  polychoric and partial correlation plus uncertainty intervals (remaining)
+  unsmoothed listwise polychoric matrices (implemented); partial correlation,
+  pairwise ordinal missingness, goodness-of-fit checks for latent bivariate
+  normality, and uncertainty intervals (remaining)
 - t tests, ANOVA/ANCOVA, chi-square, effect sizes, and multiplicity controls
 - Numeric OLS with classical inference and influence screening (implemented);
   categorical encoding, robust covariance, weighted least squares, logistic,
@@ -37,8 +39,10 @@ diagnostics, provenance, interpretation boundaries, and regression tests.
 - CTT scale diagnostics, reliability intervals, omega, and score precision
 - Continuous-indicator simple-structure CFA with lavaan ML/MLR (implemented);
   continuous-variable EFA and seeded common-factor parallel analysis with psych
-  (implemented); SEM, categorical estimators, alternative retention rules,
-  stability analysis, and local dependence (remaining)
+  (implemented); ordinal EFA from unsmoothed polychoric matrices and categorical
+  CFA with lavaan WLSMV (implemented); SEM, categorical parallel analysis,
+  alternative retention rules, stability analysis, and local dependence
+  (remaining)
 - Rasch extensions: PCM, RSM, person/item fit, Wright maps, targeting, and DIF
 - 1PL/2PL/3PL and polytomous IRT with model comparison and information functions
 - Generalizability theory, rater models, many-facet models, and DCM

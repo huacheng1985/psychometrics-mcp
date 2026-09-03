@@ -31,14 +31,21 @@ from .factor import confirmatory_factor_analysis as fit_cfa
 from .factor import factor_capabilities
 from .models import (
     AnalysisPlanRequest,
+    CategoricalCFARequest,
     CFARequest,
     CorrelationRequest,
     ExploratoryFactorAnalysisRequest,
     NumericData,
     OLSRequest,
+    OrdinalEFARequest,
     ParallelAnalysisRequest,
+    PolychoricCorrelationRequest,
     ResponseData,
 )
+from .ordinal import categorical_confirmatory_factor_analysis as fit_categorical_cfa
+from .ordinal import ordinal_capabilities
+from .ordinal import ordinal_exploratory_factor_analysis as fit_ordinal_efa
+from .ordinal import polychoric_correlation_matrix as analyze_polychoric
 from .rasch import computation_capabilities, run_rasch_model
 
 mcp = MCPServer(
@@ -56,6 +63,7 @@ def check_computation_capabilities() -> dict[str, Any]:
     result = computation_capabilities()
     result["confirmatory_factor_analysis"] = factor_capabilities()
     result.update(exploratory_factor_capabilities())
+    result.update(ordinal_capabilities())
     return result
 
 
@@ -84,6 +92,12 @@ def correlation_matrix(request: CorrelationRequest) -> dict[str, Any]:
 
 
 @mcp.tool(structured_output=True)
+def polychoric_correlation_matrix(request: PolychoricCorrelationRequest) -> dict[str, Any]:
+    """Estimate an unsmoothed polychoric matrix for ordered categorical variables."""
+    return analyze_polychoric(request)
+
+
+@mcp.tool(structured_output=True)
 def ordinary_least_squares(request: OLSRequest) -> dict[str, Any]:
     """Fit a fixed numeric OLS model with classical inference and influence diagnostics."""
     return fit_ols(request)
@@ -96,6 +110,14 @@ def confirmatory_factor_analysis(request: CFARequest) -> dict[str, Any]:
 
 
 @mcp.tool(structured_output=True)
+def categorical_confirmatory_factor_analysis(
+    request: CategoricalCFARequest,
+) -> dict[str, Any]:
+    """Fit fixed simple-structure categorical CFA with lavaan WLSMV."""
+    return fit_categorical_cfa(request)
+
+
+@mcp.tool(structured_output=True)
 def parallel_analysis(request: ParallelAnalysisRequest) -> dict[str, Any]:
     """Compare common-factor eigenvalues with simulated percentile thresholds."""
     return run_parallel_analysis(request)
@@ -105,6 +127,12 @@ def parallel_analysis(request: ParallelAnalysisRequest) -> dict[str, Any]:
 def exploratory_factor_analysis(request: ExploratoryFactorAnalysisRequest) -> dict[str, Any]:
     """Fit a fixed continuous-variable EFA with MINRES or ML and constrained rotation."""
     return fit_efa(request)
+
+
+@mcp.tool(structured_output=True)
+def ordinal_exploratory_factor_analysis(request: OrdinalEFARequest) -> dict[str, Any]:
+    """Fit fixed-factor EFA to an unsmoothed polychoric correlation matrix."""
+    return fit_ordinal_efa(request)
 
 
 @mcp.tool(structured_output=True)

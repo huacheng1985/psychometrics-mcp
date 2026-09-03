@@ -90,8 +90,9 @@ versioned numerical target. This target is engine-based regression validation
 because both its recorded values and runtime values use `psych`; independent
 numerical verification remains a later release gate.
 
-Current exclusions are deliberate: ordinal/polychoric input, bootstrap
-stability, resampled-data parallel analysis, MAP and other retention rules,
+Current exclusions from these continuous-data tools are deliberate:
+ordinal/polychoric input is handled by a separate fixed ordinal EFA contract;
+bootstrap stability, resampled-data parallel analysis, MAP and other retention rules,
 factor scores, bifactor rotations, target rotation, and automatic construct
 naming are not implemented. EFA results do not establish validity, invariance,
 fairness, causal meaning, or suitability for consequential score use.
