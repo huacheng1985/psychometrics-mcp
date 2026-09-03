@@ -23,6 +23,7 @@ or fitness for consequential decisions.
 | `confirmatory_factor_analysis` | Continuous-indicator simple-structure CFA with fixed `lavaan::cfa` ML/MLR estimation |
 | `categorical_confirmatory_factor_analysis` | Ordered-indicator simple-structure CFA with fixed `lavaan::cfa` WLSMV estimation |
 | `continuous_measurement_invariance` | Configural, metric, scalar, and strict multi-group CFA comparisons without automatic pass/fail rules |
+| `ordinal_measurement_invariance` | Reviewed, threshold-first WLSMV stages using semTools Wu-Estabrook identification; 4-10 categories |
 | `parallel_analysis` | Seeded Horn-style common-factor retention evidence with MINRES or ML |
 | `ordinal_parallel_analysis` | Seeded permutation PA with polychoric/Pearson, PCA/common-factor, and cutoff sensitivity |
 | `exploratory_factor_analysis` | Fixed-factor continuous EFA with MINRES/ML and oblimin/varimax/no rotation |
@@ -54,6 +55,16 @@ psychometrics-mcp
 The command starts a stdio MCP server. Configure an MCP host to launch the
 absolute path to `.venv/bin/psychometrics-mcp`.
 
+For ordinal invariance, install its newer dependencies into an isolated library
+(existing R packages are not replaced):
+
+```bash
+Rscript scripts/install_ordinal_invariance_dependencies.R .venv/lib/R/library
+```
+
+This pins lavaan 0.7-2 and semTools 0.5-9 for the new adapter only. The Docker
+image includes this isolated library. See its contract below for requirements.
+
 ## Docker
 
 ```bash
@@ -76,10 +87,11 @@ python -m build
 ```
 
 All tool results carry `schema_version: "1.0"`. The test suite includes real
-`eRm`, `lavaan`, and `psych` integration tests and versioned numerical
+`eRm`, `lavaan`, `semTools`, and `psych` integration tests and versioned numerical
 regression targets.
 Each reference states whether it is independent or engine-based validation. CI
-separately validates Python behavior, the R adapters, and the Docker build.
+separately validates Python behavior, the R adapters, and the Docker build plus
+real ordinal-invariance MCP calls inside the built image.
 
 ## Interpretation and safety boundaries
 
@@ -95,6 +107,7 @@ See [Architecture](docs/ARCHITECTURE.md), [Tool Admission
 Policy](docs/TOOL_ADMISSION_POLICY.md), [OLS Regression](docs/OLS_REGRESSION.md),
 [Confirmatory Factor Analysis](docs/CFA.md),
 [Measurement Invariance](docs/MEASUREMENT_INVARIANCE.md),
+[Ordinal Measurement Invariance](docs/ORDINAL_MEASUREMENT_INVARIANCE.md),
 [EFA and Parallel Analysis](docs/EFA_AND_PARALLEL_ANALYSIS.md),
 [Ordinal Correlation and Factor Models](docs/ORDINAL_CORRELATION_AND_FACTOR_MODELS.md),
 [Privacy and Deployment](docs/PRIVACY_AND_DEPLOYMENT.md), the [Output

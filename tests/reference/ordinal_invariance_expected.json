@@ -1,0 +1,10 @@
+{
+  "data": "semTools::datCat; two groups; FU1 =~ u1+u2+u3+u4; FU2 =~ u5+u6+u7+u8; no longitudinal constraints",
+  "provenance": "Engine-based regression targets, not an independent SEM implementation. R 4.5.0, lavaan 0.7-2, semTools 0.5-9.",
+  "absolute_tolerance": 0.00001,
+  "stages": ["configural", "thresholds", "metric", "scalar", "strict"],
+  "standard_chi_square": [24.745952110791734, 32.52520813602698, 36.942051542615644, 48.14809086521571, 58.04055198316178],
+  "scaled_chi_square": [40.823659960994945, 55.52091465971545, 58.572129232314644, 70.71871657869455, 81.94524307525592],
+  "degrees_of_freedom": [38, 54, 60, 66, 74],
+  "adjusted_chi_square_difference": [14.3474759643, 4.0444927519, 11.0362149479, 11.6205485409]
+}

@@ -53,8 +53,14 @@ the configural, metric, scalar, and strict sequence and reports signed fit-index
 changes and adjacent nested-model tests. It does not apply universal cutoff
 rules, search for partial invariance, or authorize group-mean comparisons.
 
+The next accepted ordinal decision slice uses `semTools::measEq.syntax` with
+Wu-Estabrook identification, theta parameterization, and WLSMV. It admits only
+4-10-category indicators with common category codes across groups and uses
+reviewed, stagewise calls rather than automatic progression. Generated syntax,
+identification constraints, and unavailable fit indices remain visible.
+
 The following areas remain candidates, not accepted implementations:
-ordinal and longitudinal invariance; broader IRT and polytomous Rasch; DIF;
+binary, three-category, mixed-scale and longitudinal invariance; broader IRT and polytomous Rasch; DIF;
 linking and equating; CAT/MST; G-theory and rater models; DCM; measurement-aware
 machine learning; validity-evidence mapping; and reproducible report generation.
 Each will receive its own evidence review before coding.

@@ -91,9 +91,10 @@ The tool does not:
 
 Ordered-categorical invariance is not routed through this tool. Thresholds,
 latent-response intercepts, and residual variances require a distinct
-identification sequence. The planned ordinal tool will follow Wu and Estabrook
-(2016) through a fixed `semTools::measEq.syntax` contract rather than reusing the
-continuous sequence. <https://doi.org/10.1007/s11336-016-9506-0>
+identification sequence. The separate [ordinal tool](ORDINAL_MEASUREMENT_INVARIANCE.md)
+follows Wu and Estabrook (2016) through a fixed, reviewed-stage
+`semTools::measEq.syntax` contract for indicators with 4-10 categories.
+<https://doi.org/10.1007/s11336-016-9506-0>
 
 ## Validation
 

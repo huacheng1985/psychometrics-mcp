@@ -69,3 +69,22 @@ All four standard chi-square values reproduced within `5e-13` across macOS R
 4.5.0 with lavaan 0.6-19 and the Linux arm64 container's R 4.2.2 with lavaan
 0.6-14. This is cross-version regression evidence, not an independent
 implementation check.
+
+## Ordinal measurement-invariance reference
+
+`ordinal_invariance_expected.json` stores five stagewise targets for
+`semTools::datCat`, with two correlated factors and no longitudinal constraints.
+The dataset is a synthetic package example. Targets use R 4.5.0, lavaan 0.7-2,
+and semTools 0.5-9; they are engine-based regression checks, not published
+empirical findings or independent algorithmic validation.
+
+`ordinal_invariance_manual.R` constructs the configural and threshold-equality
+models explicitly without calling `measEq.syntax`. Agreement verifies the
+syntax generator's release of group-2 intercept and residual identification
+restrictions when thresholds are equated. It remains a same-estimator check
+because the manual models also use lavaan.
+
+All five standard chi-square values agreed within `3e-7` between macOS R 4.5.0
+and the Linux arm64 image's R 4.2.2, both with isolated lavaan 0.7-2 and semTools
+0.5-9. Real stdio MCP calls exercised every stage in both environments. This is
+cross-environment regression evidence, not a separate estimation algorithm.

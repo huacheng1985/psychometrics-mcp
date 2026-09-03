@@ -5,7 +5,7 @@ from __future__ import annotations
 import math
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, model_validator
 
 
 class StrictModel(BaseModel):
@@ -197,6 +197,30 @@ class ContinuousMeasurementInvarianceRequest(StrictModel):
                 "This fixed simple-structure invariance contract does not permit "
                 f"cross-loadings; repeated indicators: {duplicates}."
             )
+        return self
+
+
+class OrdinalMeasurementInvarianceRequest(StrictModel):
+    data: OrdinalData
+    groups: list[StrictStr | StrictInt] = Field(min_length=2, max_length=20000)
+    factors: list[FactorDefinition] = Field(min_length=1)
+    stage: Literal["configural", "thresholds", "metric", "scalar", "strict"] = "configural"
+    prior_stage_reviewed: bool = Field(default=False, strict=True)
+    estimator: Literal["WLSMV"] = "WLSMV"
+    missing: Literal["listwise"] = "listwise"
+
+    @model_validator(mode="after")
+    def validate_ordinal_invariance(self) -> OrdinalMeasurementInvarianceRequest:
+        # Reuse only the structural/group validation, never the continuous estimator.
+        ContinuousMeasurementInvarianceRequest(
+            data=NumericData(**self.data.model_dump()),
+            groups=self.groups,
+            factors=self.factors,
+        )
+        if sum(len(factor.indicators) for factor in self.factors) > 30:
+            raise ValueError("Ordinal invariance is limited to 30 selected indicators.")
+        if self.stage != "configural" and not self.prior_stage_reviewed:
+            raise ValueError("Review the preceding stage and set prior_stage_reviewed=true.")
         return self
 
 

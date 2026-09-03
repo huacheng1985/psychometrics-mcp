@@ -30,6 +30,7 @@ async def test_stdio_client_discovers_expected_tools() -> None:
         "confirmatory_factor_analysis",
         "categorical_confirmatory_factor_analysis",
         "continuous_measurement_invariance",
+        "ordinal_measurement_invariance",
         "parallel_analysis",
         "exploratory_factor_analysis",
         "ordinal_exploratory_factor_analysis",

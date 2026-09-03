@@ -41,6 +41,7 @@ from .models import (
     NumericData,
     OLSRequest,
     OrdinalEFARequest,
+    OrdinalMeasurementInvarianceRequest,
     OrdinalParallelAnalysisRequest,
     ParallelAnalysisRequest,
     PolychoricCorrelationRequest,
@@ -51,6 +52,8 @@ from .ordinal import ordinal_capabilities
 from .ordinal import ordinal_exploratory_factor_analysis as fit_ordinal_efa
 from .ordinal import ordinal_parallel_analysis as run_ordinal_parallel_analysis
 from .ordinal import polychoric_correlation_matrix as analyze_polychoric
+from .ordinal_invariance import ordinal_invariance_capabilities
+from .ordinal_invariance import ordinal_measurement_invariance as run_ordinal_invariance
 from .rasch import computation_capabilities, run_rasch_model
 
 mcp = MCPServer(
@@ -70,6 +73,7 @@ def check_computation_capabilities() -> dict[str, Any]:
     result.update(exploratory_factor_capabilities())
     result.update(ordinal_capabilities())
     result.update(measurement_invariance_capabilities())
+    result.update(ordinal_invariance_capabilities())
     return result
 
 
@@ -129,6 +133,12 @@ def continuous_measurement_invariance(
 ) -> dict[str, Any]:
     """Compare configural, metric, scalar, and strict continuous-indicator CFA models."""
     return run_continuous_invariance(request)
+
+
+@mcp.tool(structured_output=True)
+def ordinal_measurement_invariance(request: OrdinalMeasurementInvarianceRequest) -> dict[str, Any]:
+    """Fit a reviewed ordinal invariance stage using Wu-Estabrook identification and WLSMV."""
+    return run_ordinal_invariance(request)
 
 
 @mcp.tool(structured_output=True)
