@@ -31,8 +31,13 @@ The next candidate is chosen by dependency value, evidence strength, package
 maturity, and ability to define a safe fixed contract. The first newly admitted
 measurement-core tool is continuous-indicator CFA through `lavaan::cfa`.
 
-The following areas remain candidates, not accepted implementations: EFA and
-parallel analysis; categorical CFA and invariance; broader IRT and polytomous
-Rasch; DIF; linking and equating; CAT/MST; G-theory and rater models; DCM;
-measurement-aware machine learning; validity-evidence mapping; and reproducible
-report generation. Each will receive its own evidence review before coding.
+The next accepted measurement-core slice is continuous-variable EFA and
+Horn-style common-factor parallel analysis through fixed `psych::fa` adapters.
+Their candidate-versus-fitted outputs remain separate, and neither may name or
+confirm a construct automatically.
+
+The following areas remain candidates, not accepted implementations:
+categorical EFA/CFA and invariance; broader IRT and polytomous Rasch; DIF;
+linking and equating; CAT/MST; G-theory and rater models; DCM; measurement-aware
+machine learning; validity-evidence mapping; and reproducible report generation.
+Each will receive its own evidence review before coding.

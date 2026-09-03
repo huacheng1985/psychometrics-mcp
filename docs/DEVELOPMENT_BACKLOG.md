@@ -36,8 +36,9 @@ diagnostics, provenance, interpretation boundaries, and regression tests.
 
 - CTT scale diagnostics, reliability intervals, omega, and score precision
 - Continuous-indicator simple-structure CFA with lavaan ML/MLR (implemented);
-  EFA, parallel analysis, SEM, categorical estimators, and local dependence
-  (remaining)
+  continuous-variable EFA and seeded common-factor parallel analysis with psych
+  (implemented); SEM, categorical estimators, alternative retention rules,
+  stability analysis, and local dependence (remaining)
 - Rasch extensions: PCM, RSM, person/item fit, Wright maps, targeting, and DIF
 - 1PL/2PL/3PL and polytomous IRT with model comparison and information functions
 - Generalizability theory, rater models, many-facet models, and DCM

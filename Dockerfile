@@ -6,7 +6,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-      r-base r-cran-erm r-cran-jsonlite r-cran-lavaan \
+      r-base r-cran-erm r-cran-jsonlite r-cran-lavaan r-cran-psych r-cran-gparotation \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

@@ -20,6 +20,8 @@ or fitness for consequential decisions.
 | `correlation_matrix` | Pearson or Spearman matrices with pairwise/listwise deletion and pair-specific n |
 | `ordinary_least_squares` | Numeric OLS with classical inference, fit, sample flow, and influence diagnostics |
 | `confirmatory_factor_analysis` | Continuous-indicator simple-structure CFA with fixed `lavaan::cfa` ML/MLR estimation |
+| `parallel_analysis` | Seeded Horn-style common-factor retention evidence with MINRES or ML |
+| `exploratory_factor_analysis` | Fixed-factor continuous EFA with MINRES/ML and oblimin/varimax/no rotation |
 | `plan_psychometric_analysis` | Build a purpose- and design-aware analysis sequence |
 | `rasch_model` | Fit a fixed dichotomous `eRm::RM` model with CML |
 
@@ -34,7 +36,8 @@ models, DCM, validity evidence, and reproducible reporting.
 Requirements:
 
 - Python 3.11+
-- R with `eRm`, `lavaan`, and `jsonlite` for the fixed Rasch and CFA adapters
+- R with `eRm`, `lavaan`, `psych`, `GPArotation`, and `jsonlite` for the fixed
+  Rasch, CFA, parallel-analysis, and EFA adapters
 
 ```bash
 python3 -m venv .venv
@@ -68,7 +71,8 @@ python -m build
 ```
 
 All tool results carry `schema_version: "1.0"`. The test suite includes real
-`eRm` and `lavaan` integration tests and versioned numerical regression targets.
+`eRm`, `lavaan`, and `psych` integration tests and versioned numerical
+regression targets.
 Each reference states whether it is independent or engine-based validation. CI
 separately validates Python behavior, the R adapters, and the Docker build.
 
@@ -85,6 +89,7 @@ separately validates Python behavior, the R adapters, and the Docker build.
 See [Architecture](docs/ARCHITECTURE.md), [Tool Admission
 Policy](docs/TOOL_ADMISSION_POLICY.md), [OLS Regression](docs/OLS_REGRESSION.md),
 [Confirmatory Factor Analysis](docs/CFA.md),
+[EFA and Parallel Analysis](docs/EFA_AND_PARALLEL_ANALYSIS.md),
 [Privacy and Deployment](docs/PRIVACY_AND_DEPLOYMENT.md), the [Output
 Contract](docs/OUTPUT_CONTRACT.md), and the [Development
 Backlog](docs/DEVELOPMENT_BACKLOG.md).

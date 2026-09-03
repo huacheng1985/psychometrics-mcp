@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0",
+  "status": "engine_based_psych_regression_target",
+  "generator": "Deterministic two-factor trigonometric generator in tests/test_exploratory.py",
+  "engine_version_recorded": "psych 2.5.6 with R 4.5.0",
+  "iterations": 100,
+  "percentile": 0.95,
+  "seed": 123,
+  "suggested_factors": 2,
+  "observed_common_factor_eigenvalues": [
+    3.635626799519204,
+    1.290864118510971,
+    -0.3138316798851979,
+    -0.3202383380876883,
+    -0.3243210369713239,
+    -0.3324731139489077
+  ],
+  "simulated_percentiles": [
+    1.04662464647685,
+    0.1838009962594813,
+    0.1104666764814062,
+    0.0490594270643842,
+    -0.01797866106084944,
+    -0.08727229210053858
+  ],
+  "absolute_tolerance": 0.000001,
+  "validation_scope": "This target detects adapter and environment drift; it is not independent validation because psych is used to generate and evaluate the target."
+}

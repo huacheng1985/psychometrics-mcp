@@ -24,14 +24,19 @@ from .analysis import (
 from .analysis import (
     plan_psychometric_analysis as make_plan,
 )
+from .exploratory import exploratory_factor_analysis as fit_efa
+from .exploratory import exploratory_factor_capabilities
+from .exploratory import parallel_analysis as run_parallel_analysis
 from .factor import confirmatory_factor_analysis as fit_cfa
 from .factor import factor_capabilities
 from .models import (
     AnalysisPlanRequest,
     CFARequest,
     CorrelationRequest,
+    ExploratoryFactorAnalysisRequest,
     NumericData,
     OLSRequest,
+    ParallelAnalysisRequest,
     ResponseData,
 )
 from .rasch import computation_capabilities, run_rasch_model
@@ -50,6 +55,7 @@ def check_computation_capabilities() -> dict[str, Any]:
     """Report whether local Python and the fixed R analysis engines are available."""
     result = computation_capabilities()
     result["confirmatory_factor_analysis"] = factor_capabilities()
+    result.update(exploratory_factor_capabilities())
     return result
 
 
@@ -87,6 +93,18 @@ def ordinary_least_squares(request: OLSRequest) -> dict[str, Any]:
 def confirmatory_factor_analysis(request: CFARequest) -> dict[str, Any]:
     """Fit a fixed continuous-indicator simple-structure CFA with lavaan::cfa."""
     return fit_cfa(request)
+
+
+@mcp.tool(structured_output=True)
+def parallel_analysis(request: ParallelAnalysisRequest) -> dict[str, Any]:
+    """Compare common-factor eigenvalues with simulated percentile thresholds."""
+    return run_parallel_analysis(request)
+
+
+@mcp.tool(structured_output=True)
+def exploratory_factor_analysis(request: ExploratoryFactorAnalysisRequest) -> dict[str, Any]:
+    """Fit a fixed continuous-variable EFA with MINRES or ML and constrained rotation."""
+    return fit_efa(request)
 
 
 @mcp.tool(structured_output=True)

@@ -32,3 +32,12 @@ for the same model under `std.lv = TRUE`. The integration test verifies model
 mapping, extraction, and numerical stability through the fixed adapter. Because
 the reference and runtime both use lavaan, this remains engine-based numerical
 validation rather than an independent CFA implementation.
+
+## Parallel-analysis numerical reference
+
+`parallel_synthetic_expected.json` records common-factor eigenvalues and
+seeded 95th-percentile simulation thresholds for the deterministic two-factor
+generator in `tests/test_exploratory.py`. It catches changes in the fixed
+parallel-analysis adapter, R random-number stream, or `psych` engine. Because
+the reference and runtime both use `psych`, it is engine-based regression
+validation rather than an independent confirmation of Horn's method.

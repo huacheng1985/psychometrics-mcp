@@ -135,6 +135,38 @@ class CFARequest(StrictModel):
         return self
 
 
+class ParallelAnalysisRequest(StrictModel):
+    data: NumericData
+    extraction: Literal["minres", "ml"] = "minres"
+    iterations: int = Field(default=500, ge=100, le=2000)
+    percentile: float = Field(default=0.95, gt=0.5, lt=1.0)
+    seed: int = Field(default=20260902, ge=0, le=2_147_483_647)
+    missing: Literal["listwise"] = "listwise"
+
+    @model_validator(mode="after")
+    def at_least_three_variables(self) -> ParallelAnalysisRequest:
+        if len(self.data.values[0]) < 3:
+            raise ValueError("Parallel analysis requires at least three variables.")
+        return self
+
+
+class ExploratoryFactorAnalysisRequest(StrictModel):
+    data: NumericData
+    factors: int = Field(ge=1)
+    extraction: Literal["minres", "ml"] = "minres"
+    rotation: Literal["oblimin", "varimax", "none"] = "oblimin"
+    missing: Literal["listwise"] = "listwise"
+
+    @model_validator(mode="after")
+    def validate_dimensions(self) -> ExploratoryFactorAnalysisRequest:
+        variables = len(self.data.values[0])
+        if variables < 3:
+            raise ValueError("Exploratory factor analysis requires at least three variables.")
+        if self.factors >= variables:
+            raise ValueError("factors must be smaller than the number of variables.")
+        return self
+
+
 class AnalysisPlanRequest(StrictModel):
     purpose: Literal[
         "scale_development",

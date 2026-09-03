@@ -8,8 +8,9 @@ The current local-first vertical slice has four boundaries:
 1. MCP schemas accept only explicitly modeled fields.
 2. Deterministic Python functions perform inspection, descriptive statistics,
    correlation, OLS regression, CTT, and planning.
-3. Fixed R adapters invoke only constrained `eRm::RM` and `lavaan::cfa`
-   workflows; user-provided R, lavaan syntax, and shell code are never accepted.
+3. Fixed R adapters invoke only constrained `eRm::RM`, `lavaan::cfa`, and
+   `psych::fa` workflows; user-provided R, model syntax, and shell code are
+   never accepted.
 4. Results carry a schema version and return applicable sample flow, methods,
    package versions, warnings, and explicit interpretation limits.
 
