@@ -40,8 +40,15 @@ The next accepted dependency slice comprises unsmoothed two-step polychoric
 correlations, ordinal EFA through `psych`, and categorical CFA through lavaan
 WLSMV. Association, exploration, and confirmation remain separate outputs.
 
+The next accepted retention slice is seeded permutation parallel analysis for
+ordinal data. It preserves exact univariate category margins, never smooths a
+polychoric matrix, and exposes sensitivity across polychoric versus Pearson
+correlations, principal-component versus common-factor spectra, and mean versus
+requested-percentile cutoffs. Its primary recommendation remains exploratory
+evidence and is never passed automatically to EFA.
+
 The following areas remain candidates, not accepted implementations:
-categorical parallel analysis and invariance; broader IRT and polytomous Rasch; DIF;
-linking and equating; CAT/MST; G-theory and rater models; DCM; measurement-aware
-machine learning; validity-evidence mapping; and reproducible report generation.
-Each will receive its own evidence review before coding.
+continuous and ordinal invariance; broader IRT and polytomous Rasch; DIF; linking
+and equating; CAT/MST; G-theory and rater models; DCM; measurement-aware machine
+learning; validity-evidence mapping; and reproducible report generation. Each
+will receive its own evidence review before coding.

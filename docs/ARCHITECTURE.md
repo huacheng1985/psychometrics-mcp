@@ -10,9 +10,10 @@ The current local-first vertical slice has four boundaries:
    correlation, OLS regression, CTT, and planning.
 3. Fixed R adapters invoke only constrained `eRm::RM`, continuous and ordinal
    `lavaan::cfa`, `psych::polychoric`, and continuous or polychoric
-   `psych::fa` workflows; user-provided R, model syntax, and shell code are
-   never accepted. Polychoric smoothing is disabled and non-positive-definite
-   matrices remain explicit failures or diagnostics.
+   `psych::fa` workflows, including bounded seeded ordinal permutation parallel
+   analysis; user-provided R, model syntax, and shell code are never accepted.
+   Polychoric smoothing is disabled and non-positive-definite matrices remain
+   explicit failures or diagnostics.
 4. Results carry a schema version and return applicable sample flow, methods,
    package versions, warnings, and explicit interpretation limits.
 

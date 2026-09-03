@@ -44,10 +44,14 @@ validation rather than an independent confirmation of Horn's method.
 
 ## Ordinal numerical references
 
-`ordinal_expected.json` contains three targets. The symmetric binary-table
+`ordinal_expected.json` contains four targets. The symmetric binary-table
 polychoric target is independent and analytic: when both thresholds equal zero,
 the quadrant probability identity gives the stated tetrachoric correlation.
-The ordinal EFA and categorical CFA targets use the deterministic 500-row,
-six-indicator generator in `tests/test_ordinal.py`. They detect adapter and
-engine drift but remain engine-based because the targets and runtime use
-`psych` or `lavaan`, respectively.
+The ordinal EFA, seeded permutation parallel-analysis, and categorical CFA
+targets use the deterministic 500-row, six-indicator generator in
+`tests/test_ordinal.py`. They detect adapter and engine drift but remain
+engine-based because the targets and runtime use `psych` or `lavaan`,
+respectively. The ordinal parallel-analysis observed and seeded reference
+eigenvalues reproduced within `4.5e-13` across macOS R 4.5.0 with `psych`
+2.5.6 and the Linux arm64 container's R 4.2.2 with `psych` 2.2.9. This is
+cross-version regression evidence, not independent algorithmic validation.

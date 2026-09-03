@@ -1,9 +1,11 @@
 # Ordinal Correlation and Factor Models
 
-Psychometrics MCP separates ordinal association, exploratory structure, and
-confirmatory structure into three tools:
+Psychometrics MCP separates ordinal association, retention evidence,
+exploratory structure, and confirmatory structure into four tools:
 
 - `polychoric_correlation_matrix` estimates latent-response associations;
+- `ordinal_parallel_analysis` supplies factor-retention evidence with explicit
+  method sensitivity;
 - `ordinal_exploratory_factor_analysis` fits a user-selected exploratory factor
   count to that association matrix;
 - `categorical_confirmatory_factor_analysis` tests a prespecified
@@ -29,6 +31,15 @@ No result is silently promoted into the next analytical stage.
 - Fabrigar, Wegener, MacCallum, and Strahan (1999) provide broader guidance on
   extraction, retention, rotation, and interpretation in EFA.
   <https://doi.org/10.1037/1082-989X.4.3.272>
+- Horn (1965) introduced parallel analysis by comparing observed roots with
+  roots from random data of the same dimensions.
+  <https://doi.org/10.1007/BF02289447>
+- Buja and Eyuboglu (1992) developed the permutation interpretation of parallel
+  analysis and documented differences between principal-component and common-
+  factor variants. <https://doi.org/10.1207/s15327906mbr2704_2>
+- Garrido, Abad, and Ponsoda (2013) evaluated ordinal parallel analysis across
+  data conditions and method choices, including correlation matrix, extraction
+  spectrum, and eigenvalue percentile. <https://doi.org/10.1037/a0030005>
 - The implementation uses the established CRAN `psych` and `lavaan` packages.
   The official lavaan categorical-data tutorial documents that `ordered=` with
   WLSMV uses DWLS estimation, robust standard errors, and a mean- and
@@ -44,12 +55,14 @@ Category numbers express order, not equal spacing. Each analyzed variable must
 have two to ten observed categories, and each observed category must contain at
 least two complete cases. Category values need not be consecutive.
 
-All three tools initially use listwise deletion. They return the one-based
+All four tools initially use listwise deletion. They return the one-based
 excluded row numbers, category values and counts, sparse-category warnings, and
 the number of empty bivariate contingency-table cells. The polychoric tool
-requires at least 20 complete rows; ordinal EFA and categorical CFA require at
-least 100 under this conservative execution contract. These lower bounds are
-software safeguards, not claims that a sample is substantively adequate.
+requires at least 20 complete rows; ordinal parallel analysis, ordinal EFA, and
+categorical CFA require at least 100 under this conservative execution contract.
+Ordinal parallel analysis accepts at most 30 variables and 1,000 successful
+permutations to bound local compute. These limits are software safeguards, not
+claims that a design is substantively adequate.
 
 ## Unsmoothed polychoric correlation
 
@@ -64,6 +77,40 @@ The result reports the full correlation matrix, finite marginal thresholds,
 eigenvalues, positive-definiteness status, and correlations at or beyond an
 absolute value of .999. A non-positive-definite result remains visible and is
 never replaced with a nearby admissible matrix.
+
+## Ordinal parallel analysis
+
+`ordinal_parallel_analysis` independently permutes every variable without
+replacement. Each reference data set therefore preserves every observed
+univariate category count exactly while breaking cross-variable association.
+The adapter obtains both an unsmoothed, pair-specific-threshold
+`psych::polychoric` matrix and a Pearson matrix for the observed and permuted
+data. It rejects, rather than repairs, invalid polychoric reference matrices and
+attempts at most three times the requested number of successful permutations.
+The successful, attempted, and rejected counts and rejection reasons are
+returned.
+
+The tool compares eight retention variants formed by crossing:
+
+- polychoric and Pearson correlation matrices;
+- principal-component roots and common-factor roots from the selected MINRES or
+  ML method; and
+- the mean and a requested percentile of the permutation roots.
+
+The primary variant is polychoric correlation, principal-component roots, and
+the mean permutation root. This configuration follows the broad recommendation
+reported by Garrido et al. (2013), but the tool labels it as a primary
+suggestion rather than a confirmed count. Every variant uses the first-crossing
+rule: it retains consecutive leading observed roots only until the first root
+that does not exceed its matched reference. Disagreement across variants is a
+warning and remains visible in the structured result. The random seed and all
+per-root observed and reference values are returned. No suggested count is
+automatically fitted by the EFA tool.
+
+The permutation generator is fixed in the current contract. Thresholded-normal
+simulation, alternative ordinal null models, MAP, comparison-data methods, and
+bootstrap stability are not silently substituted and remain future sensitivity
+extensions.
 
 ## Ordinal EFA
 
@@ -81,12 +128,12 @@ on each factor positive and transforms the factor-correlation matrix
 consistently. Factor order remains engine-dependent. Heywood cases and the
 minimum polychoric eigenvalue are explicit diagnostics.
 
-The factor count is supplied by the caller. The current tool does not implement
-ordinal parallel analysis; factor-retention sensitivity remains a required
-human analytical step. In particular, Garrido, Abad, and Ponsoda (2013) show
-that parallel analysis with ordinal variables is sensitive to sample size,
-loadings, factor count and correlations, number of response categories, and
-skewness. <https://doi.org/10.1037/a0030005>
+The factor count is supplied by the caller. Even when an ordinal parallel-
+analysis result is available, choosing and fitting that count is a separate
+human-reviewed action. Garrido, Abad, and Ponsoda (2013) show that parallel
+analysis with ordinal variables is sensitive to sample size, loadings, factor
+count and correlations, number of response categories, and skewness.
+<https://doi.org/10.1037/a0030005>
 
 ## Categorical CFA
 
@@ -110,14 +157,15 @@ reference. For a symmetric binary table with both thresholds at zero,
 `rho = sin(2*pi*(P11 - 1/4))`; the fixed table gives
 `rho = 0.5877852523`.
 
-The ordinal EFA and categorical CFA tests use a deterministic 500-row,
-six-indicator, two-factor generator. They verify loading recovery, threshold
-mapping, correlation-matrix admissibility, WLSMV convergence and post-check,
-and versioned numerical targets. Those factor-model targets are engine-based,
-not independent implementations. Cross-version and independent validation
-remain distinct claims.
+The ordinal parallel-analysis, EFA, and categorical CFA tests use a
+deterministic 500-row, six-indicator, two-factor generator. They verify seeded
+retention recovery and all eight sensitivity variants, loading recovery,
+threshold mapping, correlation-matrix admissibility, WLSMV convergence and
+post-check, and versioned numerical targets. Those parallel and factor-model
+targets are engine-based, not independent implementations. Cross-version and
+independent validation remain distinct claims.
 
-All three tools depend on the hypothesis that ordered observations arise by
+All four tools depend on the hypothesis that ordered observations arise by
 thresholding latent continuous responses, with bivariate-normal assumptions
 for each polychoric association. High correlations or good fit cannot establish
 that data-generating story. Results do not establish dimensionality, construct

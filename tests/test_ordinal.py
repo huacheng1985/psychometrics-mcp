@@ -12,6 +12,7 @@ from psychometrics_mcp.models import (
     FactorDefinition,
     OrdinalData,
     OrdinalEFARequest,
+    OrdinalParallelAnalysisRequest,
     PolychoricCorrelationRequest,
 )
 from psychometrics_mcp.ordinal import (
@@ -19,6 +20,7 @@ from psychometrics_mcp.ordinal import (
     categorical_confirmatory_factor_analysis,
     ordinal_capabilities,
     ordinal_exploratory_factor_analysis,
+    ordinal_parallel_analysis,
     polychoric_correlation_matrix,
 )
 
@@ -96,6 +98,31 @@ def test_ordinal_efa_rejects_as_many_factors_as_variables() -> None:
         OrdinalEFARequest(
             data=OrdinalData(values=_ordinal_cfa_values(), variable_names=VARIABLE_NAMES),
             factors=6,
+        )
+
+
+def test_ordinal_parallel_analysis_requires_three_variables() -> None:
+    with pytest.raises(ValidationError, match="at least three variables"):
+        OrdinalParallelAnalysisRequest(
+            data=OrdinalData(values=[[1, 2], [2, 1]], variable_names=["a", "b"])
+        )
+
+
+def test_ordinal_parallel_analysis_limits_computational_width() -> None:
+    values = [[1] * 31, [2] * 31]
+    with pytest.raises(ValidationError, match="limited to 30 variables"):
+        OrdinalParallelAnalysisRequest(data=OrdinalData(values=values))
+
+
+def test_ordinal_parallel_analysis_requires_conservative_complete_sample() -> None:
+    with pytest.raises(OrdinalAnalysisError, match="at least 100 complete rows"):
+        ordinal_parallel_analysis(
+            OrdinalParallelAnalysisRequest(
+                data=OrdinalData(
+                    values=_ordinal_cfa_values()[:99], variable_names=VARIABLE_NAMES
+                ),
+                iterations=100,
+            )
         )
 
 
@@ -191,5 +218,64 @@ def test_ordinal_efa_recovers_groups_with_unsmoothed_polychorics() -> None:
         "ordinal_factor_evaluation",
         "exploratory_method_guidance",
         "assumption_limit",
+        "engine",
+    }
+
+
+@pytest.mark.integration
+def test_ordinal_parallel_analysis_is_seeded_and_reports_sensitivity() -> None:
+    if not ordinal_capabilities()["ordinal_parallel_analysis"]["available"]:
+        pytest.skip("R/psych/jsonlite not installed")
+    targets = json.loads(REFERENCE_TARGETS.read_text(encoding="utf-8"))[
+        "ordinal_parallel_analysis"
+    ]
+    request = OrdinalParallelAnalysisRequest(
+        data=OrdinalData(values=_ordinal_cfa_values(), variable_names=VARIABLE_NAMES),
+        iterations=100,
+        seed=123,
+    )
+    first = ordinal_parallel_analysis(request)
+    second = ordinal_parallel_analysis(request)
+
+    assert first["schema_version"] == "1.0"
+    assert first["method"]["smoothing"] is False
+    assert first["method"]["reference_generation"].startswith(
+        "independent within-column permutation"
+    )
+    assert first["method"]["exact_univariate_margins_preserved"] is True
+    assert first["diagnostics"]["permutation_margins_preserved_by_construction"] is True
+    assert first["suggested_factors"] == targets["suggested_factors"] == 2
+    assert first["eigenvalues"] == second["eigenvalues"]
+    assert first["simulation"] == second["simulation"]
+    assert first["simulation"]["successful_iterations"] == 100
+    assert len(first["sensitivity_results"]) == 8
+    variants = {
+        (row["correlation"], row["spectrum"], row["cutoff"])
+        for row in first["sensitivity_results"]
+    }
+    assert variants == {
+        (correlation, spectrum, cutoff)
+        for correlation in ("polychoric", "pearson")
+        for spectrum in ("principal_components", "common_factor_minres")
+        for cutoff in ("mean", "percentile")
+    }
+    observed = [
+        row["observed"]["polychoric_principal_components"]
+        for row in first["eigenvalues"]
+    ]
+    reference_means = [
+        row["permutation_mean"]["polychoric_principal_components"]
+        for row in first["eigenvalues"]
+    ]
+    assert observed == pytest.approx(
+        targets["observed_polychoric_principal_component_eigenvalues"], abs=1e-8
+    )
+    assert reference_means == pytest.approx(
+        targets["permutation_mean_polychoric_principal_component_eigenvalues"], abs=1e-6
+    )
+    assert {reference["role"] for reference in first["references"]} == {
+        "method_foundation",
+        "permutation_foundation",
+        "ordinal_method_evaluation",
         "engine",
     }

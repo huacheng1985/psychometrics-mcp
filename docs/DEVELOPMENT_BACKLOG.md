@@ -40,16 +40,17 @@ diagnostics, provenance, interpretation boundaries, and regression tests.
 - Continuous-indicator simple-structure CFA with lavaan ML/MLR (implemented);
   continuous-variable EFA and seeded common-factor parallel analysis with psych
   (implemented); ordinal EFA from unsmoothed polychoric matrices and categorical
-  CFA with lavaan WLSMV (implemented); SEM, categorical parallel analysis,
-  alternative retention rules, stability analysis, and local dependence
-  (remaining)
+  CFA with lavaan WLSMV (implemented); seeded ordinal permutation parallel
+  analysis with correlation, extraction-spectrum, and cutoff sensitivity
+  (implemented); SEM, additional retention rules, resampling stability, and
+  local dependence (remaining)
 - Rasch extensions: PCM, RSM, person/item fit, Wright maps, targeting, and DIF
 - 1PL/2PL/3PL and polytomous IRT with model comparison and information functions
 - Generalizability theory, rater models, many-facet models, and DCM
 
 ## Priority 3: Measurement decisions
 
-- Multi-group and longitudinal invariance
+- Continuous and ordinal multi-group and longitudinal invariance
 - DIF detection with effect sizes, purification, sensitivity, and fairness review
 - Linking, equating, vertical scaling, anchor drift, and uncertainty propagation
 - CAT/MST simulation, exposure, routing, stopping, and ETIF evaluation

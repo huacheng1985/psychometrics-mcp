@@ -38,6 +38,7 @@ from .models import (
     NumericData,
     OLSRequest,
     OrdinalEFARequest,
+    OrdinalParallelAnalysisRequest,
     ParallelAnalysisRequest,
     PolychoricCorrelationRequest,
     ResponseData,
@@ -45,6 +46,7 @@ from .models import (
 from .ordinal import categorical_confirmatory_factor_analysis as fit_categorical_cfa
 from .ordinal import ordinal_capabilities
 from .ordinal import ordinal_exploratory_factor_analysis as fit_ordinal_efa
+from .ordinal import ordinal_parallel_analysis as run_ordinal_parallel_analysis
 from .ordinal import polychoric_correlation_matrix as analyze_polychoric
 from .rasch import computation_capabilities, run_rasch_model
 
@@ -133,6 +135,12 @@ def exploratory_factor_analysis(request: ExploratoryFactorAnalysisRequest) -> di
 def ordinal_exploratory_factor_analysis(request: OrdinalEFARequest) -> dict[str, Any]:
     """Fit fixed-factor EFA to an unsmoothed polychoric correlation matrix."""
     return fit_ordinal_efa(request)
+
+
+@mcp.tool(structured_output=True)
+def ordinal_parallel_analysis(request: OrdinalParallelAnalysisRequest) -> dict[str, Any]:
+    """Run seeded permutation PA with ordinal-method sensitivity results."""
+    return run_ordinal_parallel_analysis(request)
 
 
 @mcp.tool(structured_output=True)

@@ -23,6 +23,7 @@ or fitness for consequential decisions.
 | `confirmatory_factor_analysis` | Continuous-indicator simple-structure CFA with fixed `lavaan::cfa` ML/MLR estimation |
 | `categorical_confirmatory_factor_analysis` | Ordered-indicator simple-structure CFA with fixed `lavaan::cfa` WLSMV estimation |
 | `parallel_analysis` | Seeded Horn-style common-factor retention evidence with MINRES or ML |
+| `ordinal_parallel_analysis` | Seeded permutation PA with polychoric/Pearson, PCA/common-factor, and cutoff sensitivity |
 | `exploratory_factor_analysis` | Fixed-factor continuous EFA with MINRES/ML and oblimin/varimax/no rotation |
 | `ordinal_exploratory_factor_analysis` | Fixed-factor EFA from an unsmoothed polychoric matrix |
 | `plan_psychometric_analysis` | Build a purpose- and design-aware analysis sequence |

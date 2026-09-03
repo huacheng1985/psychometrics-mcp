@@ -218,6 +218,28 @@ class OrdinalEFARequest(StrictModel):
         return self
 
 
+class OrdinalParallelAnalysisRequest(StrictModel):
+    data: OrdinalData
+    extraction: Literal["minres", "ml"] = "minres"
+    iterations: int = Field(default=500, ge=100, le=1000)
+    percentile: float = Field(default=0.95, gt=0.5, lt=1.0)
+    seed: int = Field(default=20260903, ge=0, le=2_147_483_647)
+    continuity_correction: float = Field(default=0.5, ge=0.0, le=1.0)
+    missing: Literal["listwise"] = "listwise"
+
+    @model_validator(mode="after")
+    def validate_dimensions(self) -> OrdinalParallelAnalysisRequest:
+        variables = len(self.data.values[0])
+        if variables < 3:
+            raise ValueError("Ordinal parallel analysis requires at least three variables.")
+        if variables > 30:
+            raise ValueError(
+                "Ordinal parallel analysis is limited to 30 variables per request because "
+                "each permutation requires an unsmoothed polychoric matrix."
+            )
+        return self
+
+
 class ParallelAnalysisRequest(StrictModel):
     data: NumericData
     extraction: Literal["minres", "ml"] = "minres"

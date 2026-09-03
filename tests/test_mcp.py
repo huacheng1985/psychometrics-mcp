@@ -32,6 +32,7 @@ async def test_stdio_client_discovers_expected_tools() -> None:
         "parallel_analysis",
         "exploratory_factor_analysis",
         "ordinal_exploratory_factor_analysis",
+        "ordinal_parallel_analysis",
         "plan_psychometric_analysis",
         "rasch_model",
     }

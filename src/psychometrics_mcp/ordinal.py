@@ -10,7 +10,12 @@ from typing import Any
 
 import numpy as np
 
-from .models import CategoricalCFARequest, OrdinalEFARequest, PolychoricCorrelationRequest
+from .models import (
+    CategoricalCFARequest,
+    OrdinalEFARequest,
+    OrdinalParallelAnalysisRequest,
+    PolychoricCorrelationRequest,
+)
 
 
 class OrdinalAnalysisError(RuntimeError):
@@ -38,13 +43,24 @@ def ordinal_capabilities() -> dict[str, dict[str, Any]]:
         "rotations": ["oblimin", "varimax", "none"],
         "smoothing": False,
     }
+    ordinal_parallel: dict[str, Any] = {
+        "available": False,
+        "engine": "psych::polychoric + psych::fa + base R eigen",
+        "reference_generation": "independent within-column permutation",
+        "correlations": ["polychoric", "pearson"],
+        "extractions": ["principal_components", "minres", "ml"],
+        "cutoffs": ["mean", "requested_percentile"],
+        "smoothing": False,
+    }
     if not rscript:
         reason = "Rscript was not found on PATH."
         polychoric["reason"] = reason
         categorical_cfa["reason"] = reason
         ordinal_efa["reason"] = reason
+        ordinal_parallel["reason"] = reason
         return {
             "polychoric_correlation_matrix": polychoric,
+            "ordinal_parallel_analysis": ordinal_parallel,
             "ordinal_exploratory_factor_analysis": ordinal_efa,
             "categorical_confirmatory_factor_analysis": categorical_cfa,
         }
@@ -71,6 +87,7 @@ def ordinal_capabilities() -> dict[str, dict[str, Any]]:
     ordinal_efa["available"] = (
         jsonlite_available == psych_available == rotation_available == "TRUE"
     )
+    ordinal_parallel["available"] = jsonlite_available == psych_available == "TRUE"
     categorical_cfa["available"] = jsonlite_available == lavaan_available == "TRUE"
     if not polychoric["available"]:
         polychoric["reason"] = "R packages psych and jsonlite are required."
@@ -80,8 +97,11 @@ def ordinal_capabilities() -> dict[str, dict[str, Any]]:
         ordinal_efa["reason"] = (
             "R packages psych, GPArotation, and jsonlite are required."
         )
+    if not ordinal_parallel["available"]:
+        ordinal_parallel["reason"] = "R packages psych and jsonlite are required."
     return {
         "polychoric_correlation_matrix": polychoric,
+        "ordinal_parallel_analysis": ordinal_parallel,
         "ordinal_exploratory_factor_analysis": ordinal_efa,
         "categorical_confirmatory_factor_analysis": categorical_cfa,
     }
@@ -441,5 +461,84 @@ def ordinal_exploratory_factor_analysis(request: OrdinalEFARequest) -> dict[str,
         "Ordinal EFA is exploratory evidence under latent-response and threshold assumptions. "
         "It does not determine a uniquely correct factor count, name constructs, confirm a "
         "measurement model, or establish validity, invariance, fairness, or causal meaning."
+    )
+    return result
+
+
+def ordinal_parallel_analysis(request: OrdinalParallelAnalysisRequest) -> dict[str, Any]:
+    """Run permutation ordinal PA with explicit matrix, extraction, and cutoff sensitivity."""
+    names = request.data.variable_names or [
+        f"variable_{index + 1}" for index in range(len(request.data.values[0]))
+    ]
+    matrix, excluded_rows, categories, warnings = _preflight(
+        request.data.values, names, names, minimum_rows=100
+    )
+    capability = ordinal_capabilities()["ordinal_parallel_analysis"]
+    if not capability["available"]:
+        raise OrdinalAnalysisError(
+            capability.get("reason", "The psych ordinal parallel-analysis engine is unavailable.")
+        )
+    result = _run_adapter(
+        "ordinal_parallel_analysis.R",
+        {
+            "values": matrix.astype(int).tolist(),
+            "variable_names": names,
+            "extraction": request.extraction,
+            "iterations": request.iterations,
+            "percentile": request.percentile,
+            "seed": request.seed,
+            "continuity_correction": request.continuity_correction,
+        },
+        timeout=600,
+    )
+    result["schema_version"] = "1.0"
+    result["sample_flow"] = {
+        "input_rows": len(request.data.values),
+        "analyzed_rows": int(matrix.shape[0]),
+        "excluded_rows": excluded_rows[:100],
+        "excluded_rows_truncated": len(excluded_rows) > 100,
+        "variables": len(names),
+    }
+    result["category_distributions"] = categories
+    result["warnings"] = warnings + result.get("warnings", [])
+    result["references"] = [
+        {
+            "role": "method_foundation",
+            "citation": (
+                "Horn, J. L. (1965). A rationale and test for the number of factors in "
+                "factor analysis. Psychometrika, 30, 179-185."
+            ),
+            "doi": "10.1007/BF02289447",
+        },
+        {
+            "role": "permutation_foundation",
+            "citation": (
+                "Buja, A., & Eyuboglu, N. (1992). Remarks on parallel analysis. "
+                "Multivariate Behavioral Research, 27(4), 509-540."
+            ),
+            "doi": "10.1207/s15327906mbr2704_2",
+        },
+        {
+            "role": "ordinal_method_evaluation",
+            "citation": (
+                "Garrido, L. E., Abad, F. J., & Ponsoda, V. (2013). A new look at "
+                "Horn's parallel analysis with ordinal variables. Psychological Methods, "
+                "18(4), 454-474."
+            ),
+            "doi": "10.1037/a0030005",
+        },
+        {
+            "role": "engine",
+            "citation": "Revelle, W. psych: Procedures for Psychological Research.",
+            "url": "https://CRAN.R-project.org/package=psych",
+        },
+    ]
+    result["interpretation_boundary"] = (
+        "Ordinal parallel analysis is factor-retention evidence, not a hypothesis test that "
+        "identifies a uniquely true dimensionality. Its result depends on the correlation "
+        "matrix, extraction spectrum, cutoff rule, category distributions, sample size, and "
+        "latent-response assumptions. Review all sensitivity variants with substantive theory, "
+        "residuals, loading stability, and independent samples before fitting or confirming a "
+        "measurement model."
     )
     return result

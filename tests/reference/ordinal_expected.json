@@ -27,6 +27,31 @@
     "absolute_tolerance": 0.00001,
     "validation_scope": "The target detects adapter and environment drift; it is not independent validation because psych generated the recorded values and runtime values."
   },
+  "ordinal_parallel_analysis": {
+    "status": "engine_based_seeded_permutation_regression_target",
+    "generator": "Deterministic two-factor ordinal generator in tests/test_ordinal.py",
+    "engine_version_recorded": "psych 2.5.6 with R 4.5.0",
+    "iterations": 100,
+    "seed": 123,
+    "suggested_factors": 2,
+    "observed_polychoric_principal_component_eigenvalues": [
+      3.714962364422439,
+      1.817381399013625,
+      0.1480777188813656,
+      0.1448380735136024,
+      0.09038055272284606,
+      0.08435989144612302
+    ],
+    "permutation_mean_polychoric_principal_component_eigenvalues": [
+      1.181389029718312,
+      1.096028983722037,
+      1.024697204441092,
+      0.9634432784394552,
+      0.9070425879609318,
+      0.8273989157181717
+    ],
+    "validation_scope": "The target detects adapter, seed, and engine drift; it is not independent validation because psych generated the polychoric values used by the reference and runtime implementation."
+  },
   "categorical_cfa": {
     "status": "engine_based_lavaan_regression_target",
     "generator": "Deterministic two-factor ordinal generator in tests/test_ordinal.py",
