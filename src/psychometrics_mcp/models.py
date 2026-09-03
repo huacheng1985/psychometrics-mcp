@@ -156,6 +156,50 @@ class CFARequest(StrictModel):
         return self
 
 
+class ContinuousMeasurementInvarianceRequest(StrictModel):
+    data: NumericData
+    groups: list[str | int] = Field(min_length=2)
+    factors: list[FactorDefinition] = Field(min_length=1)
+    estimator: Literal["ML", "MLR"] = "MLR"
+    missing: Literal["listwise"] = "listwise"
+
+    @model_validator(mode="after")
+    def validate_multigroup_measurement_model(
+        self,
+    ) -> ContinuousMeasurementInvarianceRequest:
+        if len(self.groups) != len(self.data.values):
+            raise ValueError("groups length must match the number of data rows.")
+        if any(isinstance(group, bool) for group in self.groups):
+            raise ValueError("Boolean group labels are not permitted.")
+        if any(isinstance(group, str) and not group.strip() for group in self.groups):
+            raise ValueError("Group labels must not be blank.")
+        unique_groups = list(dict.fromkeys(self.groups))
+        if len(unique_groups) < 2:
+            raise ValueError("Measurement invariance requires at least two groups.")
+        if len(unique_groups) > 10:
+            raise ValueError("The fixed measurement-invariance contract permits at most 10 groups.")
+
+        names = self.data.variable_names or [
+            f"variable_{index + 1}" for index in range(len(self.data.values[0]))
+        ]
+        factor_names = [factor.name for factor in self.factors]
+        if len(set(factor_names)) != len(factor_names):
+            raise ValueError("Factor names must be unique.")
+        indicators = [indicator for factor in self.factors for indicator in factor.indicators]
+        unknown = [indicator for indicator in indicators if indicator not in names]
+        if unknown:
+            raise ValueError(f"Unknown indicator variables: {sorted(set(unknown))}.")
+        duplicates = sorted(
+            {indicator for indicator in indicators if indicators.count(indicator) > 1}
+        )
+        if duplicates:
+            raise ValueError(
+                "This fixed simple-structure invariance contract does not permit "
+                f"cross-loadings; repeated indicators: {duplicates}."
+            )
+        return self
+
+
 class PolychoricCorrelationRequest(StrictModel):
     data: OrdinalData
     continuity_correction: float = Field(default=0.5, ge=0.0, le=1.0)

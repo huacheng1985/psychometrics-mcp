@@ -50,7 +50,9 @@ diagnostics, provenance, interpretation boundaries, and regression tests.
 
 ## Priority 3: Measurement decisions
 
-- Continuous and ordinal multi-group and longitudinal invariance
+- Continuous multi-group configural, metric, scalar, and strict invariance with
+  ML/MLR (implemented); ordinal multi-group invariance under Wu-Estabrook
+  identification and longitudinal invariance (remaining)
 - DIF detection with effect sizes, purification, sensitivity, and fairness review
 - Linking, equating, vertical scaling, anchor drift, and uncertainty propagation
 - CAT/MST simulation, exposure, routing, stopping, and ETIF evaluation

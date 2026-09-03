@@ -29,10 +29,13 @@ from .exploratory import exploratory_factor_capabilities
 from .exploratory import parallel_analysis as run_parallel_analysis
 from .factor import confirmatory_factor_analysis as fit_cfa
 from .factor import factor_capabilities
+from .invariance import continuous_measurement_invariance as run_continuous_invariance
+from .invariance import measurement_invariance_capabilities
 from .models import (
     AnalysisPlanRequest,
     CategoricalCFARequest,
     CFARequest,
+    ContinuousMeasurementInvarianceRequest,
     CorrelationRequest,
     ExploratoryFactorAnalysisRequest,
     NumericData,
@@ -66,6 +69,7 @@ def check_computation_capabilities() -> dict[str, Any]:
     result["confirmatory_factor_analysis"] = factor_capabilities()
     result.update(exploratory_factor_capabilities())
     result.update(ordinal_capabilities())
+    result.update(measurement_invariance_capabilities())
     return result
 
 
@@ -117,6 +121,14 @@ def categorical_confirmatory_factor_analysis(
 ) -> dict[str, Any]:
     """Fit fixed simple-structure categorical CFA with lavaan WLSMV."""
     return fit_categorical_cfa(request)
+
+
+@mcp.tool(structured_output=True)
+def continuous_measurement_invariance(
+    request: ContinuousMeasurementInvarianceRequest,
+) -> dict[str, Any]:
+    """Compare configural, metric, scalar, and strict continuous-indicator CFA models."""
+    return run_continuous_invariance(request)
 
 
 @mcp.tool(structured_output=True)

@@ -55,3 +55,17 @@ respectively. The ordinal parallel-analysis observed and seeded reference
 eigenvalues reproduced within `4.5e-13` across macOS R 4.5.0 with `psych`
 2.5.6 and the Linux arm64 container's R 4.2.2 with `psych` 2.2.9. This is
 cross-version regression evidence, not independent algorithmic validation.
+
+## Measurement-invariance numerical reference
+
+`invariance_expected.json` uses the `lavaan::HolzingerSwineford1939` two-school
+example documented in the official lavaan multi-group tutorial. Configural,
+metric, and scalar chi-square values and the first two nested-model differences
+are published tutorial targets. The strict-invariance model and stored
+high-precision values are engine-based regression targets. The test therefore
+checks the fixed sequence, constraints, extraction, and numerical stability; it
+does not independently validate lavaan or establish invariance in the example.
+All four standard chi-square values reproduced within `5e-13` across macOS R
+4.5.0 with lavaan 0.6-19 and the Linux arm64 container's R 4.2.2 with lavaan
+0.6-14. This is cross-version regression evidence, not an independent
+implementation check.

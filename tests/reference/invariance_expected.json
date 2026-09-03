@@ -1,0 +1,23 @@
+{
+  "status": "published_lavaan_example_plus_engine_based_strict_target",
+  "source": "https://lavaan.ugent.be/tutorial/groups.html",
+  "dataset": "lavaan::HolzingerSwineford1939 grouped by school, x1 through x9",
+  "model": "visual =~ x1 + x2 + x3; textual =~ x4 + x5 + x6; speed =~ x7 + x8 + x9",
+  "estimator": "ML",
+  "identification": "std.lv = TRUE",
+  "sample_rows": 301,
+  "absolute_tolerance": 0.000001,
+  "ml_standard_chi_square": [
+    115.85134386112763,
+    124.04354417972819,
+    164.1028309269845,
+    181.51134525020763
+  ],
+  "degrees_of_freedom": [48, 54, 60, 69],
+  "ml_chi_square_differences": [
+    8.192200318600555,
+    40.05928674725631,
+    17.40851432322313
+  ],
+  "validation_scope": "Configural, metric, and scalar fit targets are grounded in lavaan's published tutorial; the strict stage and high-precision values remain lavaan engine regression targets."
+}

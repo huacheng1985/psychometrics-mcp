@@ -22,6 +22,7 @@ or fitness for consequential decisions.
 | `ordinary_least_squares` | Numeric OLS with classical inference, fit, sample flow, and influence diagnostics |
 | `confirmatory_factor_analysis` | Continuous-indicator simple-structure CFA with fixed `lavaan::cfa` ML/MLR estimation |
 | `categorical_confirmatory_factor_analysis` | Ordered-indicator simple-structure CFA with fixed `lavaan::cfa` WLSMV estimation |
+| `continuous_measurement_invariance` | Configural, metric, scalar, and strict multi-group CFA comparisons without automatic pass/fail rules |
 | `parallel_analysis` | Seeded Horn-style common-factor retention evidence with MINRES or ML |
 | `ordinal_parallel_analysis` | Seeded permutation PA with polychoric/Pearson, PCA/common-factor, and cutoff sensitivity |
 | `exploratory_factor_analysis` | Fixed-factor continuous EFA with MINRES/ML and oblimin/varimax/no rotation |
@@ -93,6 +94,7 @@ separately validates Python behavior, the R adapters, and the Docker build.
 See [Architecture](docs/ARCHITECTURE.md), [Tool Admission
 Policy](docs/TOOL_ADMISSION_POLICY.md), [OLS Regression](docs/OLS_REGRESSION.md),
 [Confirmatory Factor Analysis](docs/CFA.md),
+[Measurement Invariance](docs/MEASUREMENT_INVARIANCE.md),
 [EFA and Parallel Analysis](docs/EFA_AND_PARALLEL_ANALYSIS.md),
 [Ordinal Correlation and Factor Models](docs/ORDINAL_CORRELATION_AND_FACTOR_MODELS.md),
 [Privacy and Deployment](docs/PRIVACY_AND_DEPLOYMENT.md), the [Output

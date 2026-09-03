@@ -47,8 +47,14 @@ correlations, principal-component versus common-factor spectra, and mean versus
 requested-percentile cutoffs. Its primary recommendation remains exploratory
 evidence and is never passed automatically to EFA.
 
+The next accepted measurement-decision slice is continuous-indicator
+multi-group invariance through `lavaan::cfa` and `lavaan::lavTestLRT`. It fits
+the configural, metric, scalar, and strict sequence and reports signed fit-index
+changes and adjacent nested-model tests. It does not apply universal cutoff
+rules, search for partial invariance, or authorize group-mean comparisons.
+
 The following areas remain candidates, not accepted implementations:
-continuous and ordinal invariance; broader IRT and polytomous Rasch; DIF; linking
-and equating; CAT/MST; G-theory and rater models; DCM; measurement-aware machine
-learning; validity-evidence mapping; and reproducible report generation. Each
-will receive its own evidence review before coding.
+ordinal and longitudinal invariance; broader IRT and polytomous Rasch; DIF;
+linking and equating; CAT/MST; G-theory and rater models; DCM; measurement-aware
+machine learning; validity-evidence mapping; and reproducible report generation.
+Each will receive its own evidence review before coding.
