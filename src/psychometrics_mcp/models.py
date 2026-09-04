@@ -204,8 +204,10 @@ class OrdinalMeasurementInvarianceRequest(StrictModel):
     data: OrdinalData
     groups: list[StrictStr | StrictInt] = Field(min_length=2, max_length=20000)
     factors: list[FactorDefinition] = Field(min_length=1)
-    stage: Literal["configural", "thresholds", "metric", "scalar", "strict"] = "configural"
+    category_profile: Literal["polytomous", "binary", "three_category"] = "polytomous"
+    stage: Literal["configural", "thresholds", "metric", "scalar", "strict", "joint"] = "configural"
     prior_stage_reviewed: bool = Field(default=False, strict=True)
+    reviewed_analysis_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     estimator: Literal["WLSMV"] = "WLSMV"
     missing: Literal["listwise"] = "listwise"
 

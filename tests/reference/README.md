@@ -88,3 +88,15 @@ All five standard chi-square values agreed within `3e-7` between macOS R 4.5.0
 and the Linux arm64 image's R 4.2.2, both with isolated lavaan 0.7-2 and semTools
 0.5-9. Real stdio MCP calls exercised every stage in both environments. This is
 cross-environment regression evidence, not a separate estimation algorithm.
+
+`discrete_invariance_expected.json` adds fixed-seed binary and three-category
+targets for every admitted stage. `discrete_invariance_manual.R` hand-specifies
+configural, binary joint, and three-category threshold models, without semTools
+syntax generation. All loadings are explicitly freed before assigning equality
+labels to avoid lavaan's automatic marker constraint. Both routes use lavaan:
+agreement checks the adapter and identification mapping, not solver independence.
+
+The invariant-parameter three-category fixture has a metric comparison p value
+of about .0227. This is retained as sampled, not tuned to meet a cutoff. Separate
+fixed alternatives perturb one loading and one response location. These checks
+establish numerical behavior only, not calibrated power or Type I error rates.

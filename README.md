@@ -23,7 +23,7 @@ or fitness for consequential decisions.
 | `confirmatory_factor_analysis` | Continuous-indicator simple-structure CFA with fixed `lavaan::cfa` ML/MLR estimation |
 | `categorical_confirmatory_factor_analysis` | Ordered-indicator simple-structure CFA with fixed `lavaan::cfa` WLSMV estimation |
 | `continuous_measurement_invariance` | Configural, metric, scalar, and strict multi-group CFA comparisons without automatic pass/fail rules |
-| `ordinal_measurement_invariance` | Reviewed, threshold-first WLSMV stages using semTools Wu-Estabrook identification; 4-10 categories |
+| `ordinal_measurement_invariance` | Reviewed WLSMV invariance via semTools Wu-Estabrook identification; binary joint, three-category, and 4-10-category profiles |
 | `parallel_analysis` | Seeded Horn-style common-factor retention evidence with MINRES or ML |
 | `ordinal_parallel_analysis` | Seeded permutation PA with polychoric/Pearson, PCA/common-factor, and cutoff sensitivity |
 | `exploratory_factor_analysis` | Fixed-factor continuous EFA with MINRES/ML and oblimin/varimax/no rotation |
@@ -86,7 +86,9 @@ pip-audit
 python -m build
 ```
 
-All tool results carry `schema_version: "1.0"`. The test suite includes real
+Structured analysis results carry `schema_version: "1.0"`, except ordinal
+invariance, which uses `"1.1"` with status, review fingerprints, and coded adapter
+errors. The test suite includes real
 `eRm`, `lavaan`, `semTools`, and `psych` integration tests and versioned numerical
 regression targets.
 Each reference states whether it is independent or engine-based validation. CI

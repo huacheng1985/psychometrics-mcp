@@ -52,8 +52,9 @@ diagnostics, provenance, interpretation boundaries, and regression tests.
 
 - Continuous multi-group configural, metric, scalar, and strict invariance with
   ML/MLR, and stagewise ordinal multi-group invariance under Wu-Estabrook
-  identification for 4-10-category indicators (implemented); binary,
-  three-category, mixed-scale, and longitudinal invariance (remaining)
+  identification for 4-10-category and three-category indicators, plus binary
+  configural/joint constraints (implemented); binary strict/mean extensions,
+  mixed-category/scale, and longitudinal invariance (remaining)
 - DIF detection with effect sizes, purification, sensitivity, and fairness review
 - Linking, equating, vertical scaling, anchor drift, and uncertainty propagation
 - CAT/MST simulation, exposure, routing, stopping, and ETIF evaluation

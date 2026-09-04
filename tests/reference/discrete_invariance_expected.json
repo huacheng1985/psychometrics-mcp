@@ -1,0 +1,25 @@
+{
+  "provenance": {
+    "generator": "tests.test_discrete_invariance.simulated_request, seed 721, invariant parameters",
+    "R": "4.5.0",
+    "lavaan": "0.7-2",
+    "semTools": "0.5-9",
+    "note": "Same-estimator regression targets, not independent solver validation. Sampling variation can produce significant tests under invariant generating parameters."
+  },
+  "binary": {
+    "stages": ["configural", "joint"],
+    "chi_square": [9.22706349096511, 17.9131747189424],
+    "scaled_chi_square": [12.489996089225151, 22.525782791617377],
+    "df": [18, 22],
+    "adjusted_difference": [8.3733614706],
+    "p": [0.07882013513347282]
+  },
+  "three_category": {
+    "stages": ["configural", "thresholds", "metric", "scalar", "strict"],
+    "chi_square": [6.706281187930651, 6.706281189475634, 18.155076873867117, 19.69118304298301, 24.997654917241398],
+    "scaled_chi_square": [9.960173218415578, 9.96017313853618, 25.191450714658913, 25.742527737482533, 31.731080503068508],
+    "df": [18, 18, 23, 28, 34],
+    "adjusted_difference": [null, 13.0775558683, 1.5902133647, 5.8888908546],
+    "p": [null, 0.02266272473925538, 0.9024302988685822, 0.4357511304449238]
+  }
+}

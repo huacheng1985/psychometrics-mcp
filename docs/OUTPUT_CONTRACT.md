@@ -1,7 +1,9 @@
 # Output Contract
 
-Every tool result includes a top-level `schema_version`. Version `1.0` is the
-contract for the prototype's current structured JSON results.
+Structured analysis results include a top-level `schema_version`. Version `1.0`
+remains the default. Ordinal measurement invariance uses `1.1`, adding status,
+analysis fingerprints, profile metadata, and coded adapter errors. MCP SDK
+validation errors raised before adapter execution are outside this JSON contract.
 
 ## Compatibility policy
 
@@ -29,7 +31,11 @@ Input shape, field, and enum violations are rejected by strict Pydantic request
 models before analysis. Analytical precondition failures, such as nonbinary data
 for the fixed Rasch model or an unavailable R engine, fail the tool call rather
 than returning a plausible-looking result. A machine-readable cross-tool error
-taxonomy remains a release-gate item.
+taxonomy remains a release-gate item. Ordinal invariance now supplies an
+adapter-specific taxonomy and explicit MCP error results; see
+[its contract](ORDINAL_MEASUREMENT_INVARIANCE.md). A comparison that is not
+independently testable is a successful model fit with an invalid comparison,
+not a failed fit and not evidence for accepting invariance.
 
 ## Interpretation boundary
 

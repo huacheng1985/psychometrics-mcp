@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
-from typing import Any
+import json
+from typing import Annotated, Any
 
 from mcp.server.mcpserver import MCPServer
+from mcp.types import CallToolResult, TextContent
 
 from .analysis import (
     correlation_matrix as analyze_correlations,
@@ -52,7 +54,7 @@ from .ordinal import ordinal_capabilities
 from .ordinal import ordinal_exploratory_factor_analysis as fit_ordinal_efa
 from .ordinal import ordinal_parallel_analysis as run_ordinal_parallel_analysis
 from .ordinal import polychoric_correlation_matrix as analyze_polychoric
-from .ordinal_invariance import ordinal_invariance_capabilities
+from .ordinal_invariance import OrdinalInvarianceError, ordinal_invariance_capabilities
 from .ordinal_invariance import ordinal_measurement_invariance as run_ordinal_invariance
 from .rasch import computation_capabilities, run_rasch_model
 
@@ -136,9 +138,21 @@ def continuous_measurement_invariance(
 
 
 @mcp.tool(structured_output=True)
-def ordinal_measurement_invariance(request: OrdinalMeasurementInvarianceRequest) -> dict[str, Any]:
+def ordinal_measurement_invariance(
+    request: OrdinalMeasurementInvarianceRequest,
+) -> Annotated[CallToolResult, dict[str, Any]]:
     """Fit a reviewed ordinal invariance stage using Wu-Estabrook identification and WLSMV."""
-    return run_ordinal_invariance(request)
+    try:
+        result = run_ordinal_invariance(request)
+        is_error = False
+    except OrdinalInvarianceError as exc:
+        result = exc.as_result()
+        is_error = True
+    return CallToolResult(
+        is_error=is_error,
+        structured_content=result,
+        content=[TextContent(type="text", text=json.dumps(result, ensure_ascii=False))],
+    )
 
 
 @mcp.tool(structured_output=True)

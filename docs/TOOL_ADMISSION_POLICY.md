@@ -54,13 +54,18 @@ changes and adjacent nested-model tests. It does not apply universal cutoff
 rules, search for partial invariance, or authorize group-mean comparisons.
 
 The next accepted ordinal decision slice uses `semTools::measEq.syntax` with
-Wu-Estabrook identification, theta parameterization, and WLSMV. It admits only
-4-10-category indicators with common category codes across groups and uses
+Wu-Estabrook identification, theta parameterization, and WLSMV. It admits
+4-10-category, three-category, and binary profiles with common codes across groups and uses
 reviewed, stagewise calls rather than automatic progression. Generated syntax,
 identification constraints, and unavailable fit indices remain visible.
+Binary tests jointly constrain thresholds, loadings, and intercepts. Three-
+category threshold equality is explicitly not an independently testable stage.
+Wu and Estabrook (2016) and the maintained semTools implementation support these
+identification-specific restrictions; package popularity alone is not admission evidence.
 
 The following areas remain candidates, not accepted implementations:
-binary, three-category, mixed-scale and longitudinal invariance; broader IRT and polytomous Rasch; DIF;
+binary strict/mean extensions, mixed-category/scale and longitudinal invariance;
+broader IRT and polytomous Rasch; DIF;
 linking and equating; CAT/MST; G-theory and rater models; DCM; measurement-aware
 machine learning; validity-evidence mapping; and reproducible report generation.
 Each will receive its own evidence review before coding.
